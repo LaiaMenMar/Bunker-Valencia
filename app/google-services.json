@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "970806007192",
+    "project_id": "bunker-valencia",
+    "storage_bucket": "bunker-valencia.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970806007192:android:e942b3efa3415ac39fc7ed",
+        "android_client_info": {
+          "package_name": "com.laiamenmar.bunkervalencia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa2riBWb91mS741LGzM0yEcGBEw6OxtMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,50 @@
+package com.laiamenmar.bunkervalencia.navigation
+
+import android.content.Context
+import android.content.res.Configuration
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.logEvent
+import com.laiamenmar.bunkervalencia.screens.*
+import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
+import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
+
+
+/**
+ * Se encarga de la navegación entre pantallas
+ */
+@Composable
+fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
+    var analytics: AnalyticsManager = AnalyticsManager(context)
+
+    Screen {
+        NavHost(
+            navController = navController,
+            startDestination = AppScreens.LoginScreen.route
+        ) {
+            composable(route = AppScreens.LoginScreen.route) {
+                LoginScreen(
+                    analytics = analytics,
+                    navigation = navController,
+                )
+            }
+            composable(route = AppScreens.HomeScreen.route) {
+                HomeScreen(
+                    analytics = analytics,
+                    navigation = navController,
+                    )
+            }
+        }
+    }
+}
+
+
+
