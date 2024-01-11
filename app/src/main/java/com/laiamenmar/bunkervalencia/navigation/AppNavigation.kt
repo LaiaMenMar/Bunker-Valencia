@@ -16,6 +16,7 @@ import com.google.firebase.analytics.logEvent
 import com.laiamenmar.bunkervalencia.screens.*
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
+import com.laiamenmar.bunkervalencia.utils.AuthManager
 
 
 /**
@@ -23,7 +24,9 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
  */
 @Composable
 fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
+    var authManager: AuthManager = AuthManager()
     var analytics: AnalyticsManager = AnalyticsManager(context)
+
 
     Screen {
         NavHost(
@@ -32,8 +35,7 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
         ) {
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(
-                    analytics = analytics,
-                    navigation = navController,
+                   authManager, analytics, navController,
                 )
             }
             composable(route = AppScreens.HomeScreen.route) {
