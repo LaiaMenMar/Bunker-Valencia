@@ -52,10 +52,16 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch
 import android.R.*
+import android.content.Context
+import com.laiamenmar.bunkervalencia.utils.AuthRes
+import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
 fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Box(
         Modifier
@@ -78,12 +84,12 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
 
             )
         )
-        Login(Modifier.align(Alignment.Center))
+        Login(Modifier.align(Alignment.Center),authManager, analytics, navigation, scope, context)
     }
 }
 
 @Composable
-fun Login(modifier: Modifier) {
+fun Login(modifier: Modifier, auth: AuthManager, analytics: AnalyticsManager, navigation: NavController, scope:CoroutineScope, context: Context) {
     Column(modifier = modifier) {
         val email = remember {
             mutableStateOf(TextFieldValue())
@@ -118,6 +124,9 @@ fun Login(modifier: Modifier) {
 
         SocialMediaButton(
             onClick = {
+                      scope.launch {
+                          incognitoSignIn (auth, analytics, context, navigation)
+                      }
 
             },
             text = "Continuar como invitado",
@@ -248,7 +257,9 @@ fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color
         color = color
     ) {
         Row(
-            modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -262,6 +273,24 @@ fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color
             Text(text = "$text", color = if(icon == R.drawable.ic_incognito) Color.White else Color.Black)
             click = true
         }
+    }
+}
+
+private suspend fun incognitoSignIn(auth: AuthManager, analytics: AnalyticsManager, context: Context, navigation: NavController) {
+    when (val result = auth.singInAnonymously()){
+        is AuthRes.Success -> {
+            analytics.logButtonClicked("Click: Continuar como invitado")
+            navigation.navigate(AppScreens.HomeScreen.route){
+                popUpTo(AppScreens.LoginScreen.route){
+                    inclusive = true
+                }
+            }
+        }
+        is AuthRes.Error -> {
+            analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
+
+        }
+
     }
 }
 

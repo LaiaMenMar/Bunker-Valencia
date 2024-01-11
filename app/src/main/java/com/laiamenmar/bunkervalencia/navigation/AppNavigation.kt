@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
+import com.google.firebase.auth.FirebaseUser
 import com.laiamenmar.bunkervalencia.screens.*
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
@@ -25,14 +26,18 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
 @Composable
 fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
     var authManager: AuthManager = AuthManager()
+    val user: FirebaseUser? = authManager.getCurrentUser()
+
     var analytics: AnalyticsManager = AnalyticsManager(context)
 
 
     Screen {
         NavHost(
             navController = navController,
-            startDestination = AppScreens.LoginScreen.route
+            startDestination = if (user == null) AppScreens.LoginScreen.route else AppScreens.HomeScreen.route
+
         ) {
+
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(
                    authManager, analytics, navController,
@@ -40,8 +45,7 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
             }
             composable(route = AppScreens.HomeScreen.route) {
                 HomeScreen(
-                    analytics = analytics,
-                    navigation = navController,
+                    authManager, analytics, navController
                     )
             }
         }

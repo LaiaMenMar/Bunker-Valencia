@@ -20,6 +20,9 @@ class AuthManager {
 * */
     private val auth: FirebaseAuth by lazy { Firebase.auth }
 
+    /*
+    * las funcoines suspendidas no se puyeden ejecutar directamente desde un composabel
+    * */
     suspend fun singInAnonymously(): AuthRes<FirebaseUser> {
         return try {
             val result = auth.signInAnonymously().await() /*devuelve un objeto firebaseuser*/
@@ -28,8 +31,13 @@ class AuthManager {
             AuthRes.Error(e.message ?: "Error al iniciar sesión")
 
         }
+    }
 
+    fun signOut() {
+        auth.signOut()
+    }
 
-
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 }
