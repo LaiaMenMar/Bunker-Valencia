@@ -25,6 +25,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,29 +35,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.logEvent
 import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch
-import android.R.*
 import android.content.Context
+import android.widget.Toast
+import androidx.compose.ui.res.stringResource
 import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.CoroutineScope
+import java.text.NumberFormat
 
 
 @Composable
@@ -62,6 +63,9 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    var passwordInput by remember { mutableStateOf("") }
+    var emailInput by remember { mutableStateOf("") }
 
     Box(
         Modifier
@@ -71,11 +75,13 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
         ClickableText(
             text = AnnotatedString("¿No tienes una cuenta? Regístrate"),
             onClick = {
+                navigation.navigate(AppScreens.RegisterScreen.route)
+                analytics.logButtonClicked("Click: No tienes una cuenta? Regístrate")
 
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(20.dp),
+                .padding(10.dp),
             style = TextStyle(
                 fontSize = 14.sp,
                 textDecoration = TextDecoration.Underline,
@@ -84,43 +90,118 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
 
             )
         )
-        Login(Modifier.align(Alignment.Center),authManager, analytics, navigation, scope, context)
+
+        Column(modifier = Modifier.align(Alignment.Center)) {
+            HeaderImage(
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            EmailField(
+                value = emailInput,
+                onValueChanged = { emailInput = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.padding(4.dp))
+
+            PasswordField(value = passwordInput,
+                onValueChange = { passwordInput = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            LoginButton(
+                scope,
+                emailInput,
+                passwordInput,
+                authManager,
+                analytics,
+                context,
+                navigation
+            )
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "-------- o --------",
+                Modifier.align(Alignment.CenterHorizontally),
+                style = TextStyle(color = Color.Gray)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SocialMediaButton(
+                onClick = {
+                    scope.launch {
+                        incognitoSignIn(authManager, analytics, context, navigation)
+                    }
+
+                },
+                text = "Continuar como invitado",
+                icon = R.drawable.ic_incognito,
+                color = Color(0xFF363636)
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            SocialMediaButton(
+                onClick = {
+
+                },
+                text = "Continuar con Google",
+                icon = R.drawable.ic_google,
+                color = Color(0xFFF1F1F1)
+            )
+            Spacer(modifier = Modifier.height(25.dp))
+        }
     }
 }
 
+
+/*
 @Composable
 fun Login(modifier: Modifier, auth: AuthManager, analytics: AnalyticsManager, navigation: NavController, scope:CoroutineScope, context: Context) {
+
+
     Column(modifier = modifier) {
-        val email = remember {
-            mutableStateOf(TextFieldValue())
-        }
-        val password = remember {
-            mutableStateOf(TextFieldValue())
-        }
 
         HeaderImage(Modifier
             .align(Alignment.CenterHorizontally)
             )
 
-        EmailField()
+      /*  EmailField(
+            value = emailInput,
+            onValueChange = { emailInput = it })
+*/
+        EmailField(
+            value = emailInput,
+            onValueChange = { emailInput = it }
+        )
+
+
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        PasswordField()
+        PasswordField(value = passwordInput,
+            onValueChange = { passwordInput = it })
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        LoginButton()
+        LoginButton(scope, emailInput, passwordInput, auth, analytics ,context ,navigation)
 
         Spacer(modifier = Modifier.padding(8.dp))
 
         ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(text = "-------- o --------", Modifier.align(Alignment.CenterHorizontally), style = TextStyle(color = Color.Gray))
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         SocialMediaButton(
             onClick = {
@@ -145,32 +226,56 @@ fun Login(modifier: Modifier, auth: AuthManager, analytics: AnalyticsManager, na
         Spacer(modifier = Modifier.height(25.dp))
     }
 }
+*/
+/*
+* FUNCIONES COMPOSABLES
+* */
 
 @Composable
-fun SocialMediaButton() {
-    Button(onClick = { }, modifier = Modifier
-        .fillMaxWidth()
-        .height(48.dp)
+fun HeaderImage(modifier: Modifier) {
+    Image(
+        painter = painterResource(id = R.drawable.logo),
+        contentDescription = "logo del bunker",
+        modifier = modifier.size(300.dp)
     )
-    {
-        Text(text = "Continuar con Google",
-            fontSize = 16.sp )
-    }
 }
 
-/*.background(MaterialTheme.colorScheme.onPrimaryContainer)
-MaterialTheme.tyoigraphy.subtitle1)*/
 @Composable
-fun LoginButton() {
-    Button(onClick = { }, modifier = Modifier
-        .fillMaxWidth()
-        .height(48.dp)
-        )
-    {
-        Text(text = "Iniciar Sesion".uppercase(),
-            fontSize = 16.sp )
-   }
+fun EmailField(
+    value: String,
+    onValueChanged: (String) -> Unit,
+    modifier: Modifier
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChanged,
+        modifier = modifier,
+        placeholder = { Text(text = "Email") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        singleLine = true,
+        maxLines = 1,
+        label = { Text("Email") },
+    )
+}
 
+@Composable
+fun PasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier
+) {
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        visualTransformation = PasswordVisualTransformation(),
+        modifier = modifier,
+        placeholder = { Text(text = "Contraseña") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        singleLine = true,
+        maxLines = 1,
+        label = { Text("Contraseña") },
+    )
 }
 
 @Composable
@@ -180,49 +285,134 @@ fun ForgotPassword(modifier: Modifier) {
         onClick = {
 
         },
-        modifier= modifier,
+        modifier = modifier,
         style = TextStyle(
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimaryContainer
-        ))
-}
-
-
-@Composable
-fun PasswordField() {
-    var password by remember { mutableStateOf("") }
-    TextField(value = password,
-        onValueChange = {password= it},
-        visualTransformation = PasswordVisualTransformation(),
-        modifier = Modifier.fillMaxWidth(),
-        placeholder= { Text(text = "Password")},
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        singleLine = true,
-        maxLines = 1
         )
-}
-
-@Composable
-fun EmailField() {
-    var email by remember { mutableStateOf("") }
-
-    TextField(value = email,
-        onValueChange = {email = it},
-        modifier = Modifier.fillMaxWidth(),
-        placeholder= { Text(text = "Email")},
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        singleLine = true,
-        maxLines = 1)
+    )
 }
 
 
+@Composable
+fun LoginButton(
+    scope: CoroutineScope,
+    email: String,
+    password: String,
+    auth: AuthManager,
+    analytics: AnalyticsManager,
+    context: Context,
+    navigation: NavController
+) {
+    Button(
+        onClick = {
+            scope.launch {
+                emailPassSignIn(email, password, auth, analytics, context, navigation)
+            }
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    )
+    {
+        Text(
+            text = "Iniciar Sesion".uppercase(),
+            fontSize = 16.sp
+        )
+    }
+}
 
 @Composable
-fun HeaderImage(modifier: Modifier) {
-    Image(painter = painterResource(id = R.drawable.logo),
-        contentDescription = "logo del bunker",
-        modifier = modifier.size(300.dp))
+fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color) {
+    var click by remember { mutableStateOf(false) }
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.clickable { click = !click },
+        shape = RoundedCornerShape(50),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (icon == R.drawable.ic_incognito) color else Color.Gray
+        ),
+        color = color
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                modifier = Modifier.size(24.dp),
+                contentDescription = text,
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "$text",
+                color = if (icon == R.drawable.ic_incognito) Color.White else Color.Black
+            )
+            click = true
+        }
+    }
+}
+
+
+private suspend fun emailPassSignIn(
+    email: String,
+    password: String,
+    auth: AuthManager,
+    analytics: AnalyticsManager,
+    context: Context,
+    navigation: NavController
+) {
+    if (email.isNotEmpty() && password.isNotEmpty()) {
+        when (val result = auth.signInWithEmailAndPassword(email, password)) {
+            is AuthRes.Success -> {
+                analytics.logButtonClicked("Click: Iniciar sesion correo y Contraseña")
+                navigation.navigate(AppScreens.HomeScreen.route) {
+                    popUpTo(AppScreens.LoginScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+
+            is AuthRes.Error -> {
+                analytics.logError("Error SignUp: ${result.errorMessage}")
+                Toast.makeText(context, "Error SignUp: ${result.errorMessage}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
+    } else {
+        Toast.makeText(context, "Existen campos vacios", Toast.LENGTH_SHORT).show()
+
+    }
+}
+
+private suspend fun incognitoSignIn(
+    auth: AuthManager,
+    analytics: AnalyticsManager,
+    context: Context,
+    navigation: NavController
+) {
+    when (val result = auth.singInAnonymously()) {
+        is AuthRes.Success -> {
+            analytics.logButtonClicked("Click: Continuar como invitado")
+            navigation.navigate(AppScreens.HomeScreen.route) {
+                popUpTo(AppScreens.LoginScreen.route) {
+                    inclusive = true
+                }
+            }
+        }
+
+        is AuthRes.Error -> {
+            analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
+
+        }
+
+    }
 }
 
 @Composable
@@ -246,63 +436,6 @@ fun PreviewLoginScreen() {
     }
 }
 
-@Composable
-fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color, ) {
-    var click by remember { mutableStateOf(false) }
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.clickable { click = !click },
-        shape = RoundedCornerShape(50),
-        border = BorderStroke(width = 1.dp, color = if(icon == R.drawable.ic_incognito) color else Color.Gray),
-        color = color
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                modifier = Modifier.size(24.dp),
-                contentDescription = text,
-                tint = Color.Unspecified
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "$text", color = if(icon == R.drawable.ic_incognito) Color.White else Color.Black)
-            click = true
-        }
-    }
-}
 
-private suspend fun incognitoSignIn(auth: AuthManager, analytics: AnalyticsManager, context: Context, navigation: NavController) {
-    when (val result = auth.singInAnonymously()){
-        is AuthRes.Success -> {
-            analytics.logButtonClicked("Click: Continuar como invitado")
-            navigation.navigate(AppScreens.HomeScreen.route){
-                popUpTo(AppScreens.LoginScreen.route){
-                    inclusive = true
-                }
-            }
-        }
-        is AuthRes.Error -> {
-            analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
-
-        }
-
-    }
-}
-
-
-/*@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewComponent() {
-    BunkerValenciaTheme {
-        EmailField()
-    }
-}
-*/
 
 

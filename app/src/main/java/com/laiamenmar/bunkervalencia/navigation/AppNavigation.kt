@@ -48,6 +48,12 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
                     authManager, analytics, navController
                     )
             }
+            composable(route = AppScreens.RegisterScreen.route) {
+                RegisterScreen(
+                    authManager, analytics, navController,
+                )
+            }
+
         }
     }
 }
