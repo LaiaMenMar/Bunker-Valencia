@@ -53,6 +53,11 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
                     authManager, analytics, navController,
                 )
             }
+            composable(route = AppScreens.ForgotPasswordScreen.route) {
+                ForgotPasswordScreen(
+                    authManager, analytics, navController,
+                )
+            }
 
         }
     }

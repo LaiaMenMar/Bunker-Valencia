@@ -61,5 +61,15 @@ class AuthManager {
             AuthRes.Error(e.message ?: "Error al iniciar sesión")
         }
     }
+    suspend fun resetPassword(email: String): AuthRes<Unit> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            AuthRes.Success(Unit)
+        } catch(e: Exception) {
+            AuthRes.Error(e.message ?: "Error al restablecer la contraseña")
+        }
+    }
+
+
 
 }
