@@ -12,7 +12,20 @@
           "package_name": "com.laiamenmar.bunkervalencia"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "970806007192-tbutalkc9f0e2dijc2pk97rg6vlb1bfi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.laiamenmar.bunkervalencia",
+            "certificate_hash": "992165f421d9e6111d335fd72fc4e618dd5b36d4"
+          }
+        },
+        {
+          "client_id": "970806007192-cl4equg20d0i9odrias5h50ufgast4ss.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCa2riBWb91mS741LGzM0yEcGBEw6OxtMU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970806007192-cl4equg20d0i9odrias5h50ufgast4ss.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

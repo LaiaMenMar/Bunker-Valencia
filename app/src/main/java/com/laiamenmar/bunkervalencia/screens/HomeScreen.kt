@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +34,8 @@ import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @Composable
 fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {
@@ -79,6 +83,17 @@ fun HomeScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation
         verticalArrangement = Arrangement.Center,
     ) {
         if (user?.photoUrl != null){
+            AsyncImage (  model = ImageRequest.Builder(LocalContext.current)
+                .data(user?.photoUrl)
+                .crossfade(true)
+                .build(),
+                contentDescription = "Imagen",
+                placeholder = painterResource(id = R.drawable.profile),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(40.dp)
+            )
 
         } else {
             Image (

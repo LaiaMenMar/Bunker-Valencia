@@ -108,7 +108,7 @@ fun ForgotPasswordScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
     var analytics: AnalyticsManager = AnalyticsManager(context)
-    var authManager: AuthManager = AuthManager()
+    var authManager: AuthManager = AuthManager(context)
 
     BunkerValenciaTheme {
         Surface {

@@ -25,7 +25,7 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
  */
 @Composable
 fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
-    var authManager: AuthManager = AuthManager()
+    var authManager: AuthManager = AuthManager(context)
     val user: FirebaseUser? = authManager.getCurrentUser()
 
     var analytics: AnalyticsManager = AnalyticsManager(context)

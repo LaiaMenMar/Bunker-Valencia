@@ -52,6 +52,10 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.GoogleAuthProvider
 import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.CoroutineScope
 
@@ -64,6 +68,34 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
 
     var passwordInput by remember { mutableStateOf("") }
     var emailInput by remember { mutableStateOf("") }
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()) { result ->
+        when(val account = authManager.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))) {
+            is AuthRes.Success -> {
+                val credential = GoogleAuthProvider.getCredential(account?.data?.idToken, null)
+
+                scope.launch {
+                    val fireUser = authManager.signInWithGoogleCredential(credential)
+                    if (fireUser != null){
+                        Toast.makeText(context, "Bienvenidx", Toast.LENGTH_SHORT).show()
+                        navigation.navigate(AppScreens.HomeScreen.route){
+                            popUpTo(AppScreens.LoginScreen.route){
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            }
+            is AuthRes.Error -> {
+                analytics.logError("Error SignIn: ${account.errorMessage}")
+                Toast.makeText(context, "Error: ${account.errorMessage}", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     Box(
         Modifier
@@ -139,7 +171,7 @@ fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigatio
 
             SocialMediaButton(
                 onClick = {
-
+                    authManager.signInWithGoogle(googleSignInLauncher)
                 },
                 text = "Continuar con Google",
                 icon = R.drawable.ic_google,
@@ -359,7 +391,7 @@ fun PreviewLoginScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
     var analytics: AnalyticsManager = AnalyticsManager(context)
-    var authManager: AuthManager = AuthManager()
+    var authManager: AuthManager = AuthManager(context)
 
 
     BunkerValenciaTheme {
