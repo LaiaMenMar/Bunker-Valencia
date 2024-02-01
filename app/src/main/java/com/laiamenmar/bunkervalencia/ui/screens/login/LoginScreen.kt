@@ -1,4 +1,4 @@
-package com.laiamenmar.bunkervalencia.screens
+package com.laiamenmar.bunkervalencia.ui.screens.login
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.laiamenmar.bunkervalencia.R
-import com.laiamenmar.bunkervalencia.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
@@ -57,7 +57,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import com.laiamenmar.bunkervalencia.utils.AuthRes
-import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
@@ -340,7 +339,7 @@ private suspend fun emailPassSignIn(
         when (val result = auth.signInWithEmailAndPassword(email, password)) {
             is AuthRes.Success -> {
                 analytics.logButtonClicked("Click: Iniciar sesion correo y Contraseña")
-                navigation.navigate(AppScreens.HomeScreen.route) {
+                navigation.navigate(AppScreens.HomeScreen1.route) {
                     popUpTo(AppScreens.LoginScreen.route) {
                         inclusive = true
                     }
@@ -369,7 +368,7 @@ private suspend fun incognitoSignIn(
     when (val result = auth.singInAnonymously()) {
         is AuthRes.Success -> {
             analytics.logButtonClicked("Click: Continuar como invitado")
-            navigation.navigate(AppScreens.HomeScreen.route) {
+            navigation.navigate(AppScreens.HomeScreen1.route) {
                 popUpTo(AppScreens.LoginScreen.route) {
                     inclusive = true
                 }
@@ -378,7 +377,6 @@ private suspend fun incognitoSignIn(
 
         is AuthRes.Error -> {
             analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
-
         }
 
     }

@@ -1,4 +1,4 @@
-package com.laiamenmar.bunkervalencia.screens
+package com.laiamenmar.bunkervalencia.ui.screens.login
 
 import android.content.Context
 import android.widget.Toast
@@ -21,12 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.laiamenmar.bunkervalencia.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.AuthRes
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 

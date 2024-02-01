@@ -1,12 +1,10 @@
-package com.laiamenmar.bunkervalencia.screens
+package com.laiamenmar.bunkervalencia.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,41 +22,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.R
-import com.laiamenmar.bunkervalencia.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
-@Composable
-fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Cerrar sesión") },
-        text = { Text("¿Estás seguro que deseas cerrar sesión?") },
-        confirmButton = {
-            Button(
-                onClick = onConfirmLogout
-            ) {
-                Text("Aceptar")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = onDismiss
-            ) {
-                Text("Cancelar")
-            }
-        }
-    )
-}
+
 
 @Composable
 fun HomeScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {

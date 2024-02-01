@@ -1,21 +1,18 @@
-package com.laiamenmar.bunkervalencia.navigation
+package com.laiamenmar.bunkervalencia.ui.navigation
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.logEvent
 import com.google.firebase.auth.FirebaseUser
-import com.laiamenmar.bunkervalencia.screens.*
-import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
+import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
+import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen1
+import com.laiamenmar.bunkervalencia.ui.screens.Screen
+import com.laiamenmar.bunkervalencia.ui.screens.login.ForgotPasswordScreen
+import com.laiamenmar.bunkervalencia.ui.screens.login.LoginScreen
+import com.laiamenmar.bunkervalencia.ui.screens.login.RegisterScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 
@@ -34,20 +31,26 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
     Screen {
         NavHost(
             navController = navController,
-            startDestination = if (user == null) AppScreens.LoginScreen.route else AppScreens.HomeScreen.route
+            startDestination = AppScreens.LoginScreen.route/*if (user == null) AppScreens.LoginScreen.route else AppScreens.HomeScreen1.route*/
 
         ) {
 
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(
-                   authManager, analytics, navController,
+                    authManager, analytics, navController,
                 )
             }
             composable(route = AppScreens.HomeScreen.route) {
                 HomeScreen(
                     authManager, analytics, navController
-                    )
+                )
             }
+            composable(route = AppScreens.HomeScreen.route) {
+                HomeScreen1(
+                    analytics, authManager, navController
+                )
+            }
+
             composable(route = AppScreens.RegisterScreen.route) {
                 RegisterScreen(
                     authManager, analytics, navController,
