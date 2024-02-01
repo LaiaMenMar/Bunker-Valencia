@@ -28,13 +28,14 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 
 @Composable
-fun ForgotPasswordScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+fun ForgotPasswordScreen(authManager: AuthManager = koinInject(), analytics: AnalyticsManager = koinInject(), navigation: NavController) {
     val scope = rememberCoroutineScope()
     var emailInput by remember { mutableStateOf("") }
-    var context = LocalContext.current
+    val context = LocalContext.current
     var showEmailSentMessage by remember { mutableStateOf(false) }
 
     Column(
@@ -104,11 +105,11 @@ private suspend fun passwordReset(
 
 @Preview
 @Composable
-fun ForgotPasswordScreen() {
+private fun PrevForgotPasswordScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
-    var analytics: AnalyticsManager = AnalyticsManager(context)
-    var authManager: AuthManager = AuthManager(context)
+    val analytics = AnalyticsManager(context)
+    val authManager = AuthManager(context)
 
     BunkerValenciaTheme {
         Surface {
