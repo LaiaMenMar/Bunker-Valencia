@@ -18,6 +18,7 @@ import com.laiamenmar.bunkervalencia.screens.*
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
+import org.koin.compose.koinInject
 
 
 /**
@@ -25,11 +26,8 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
  */
 @Composable
 fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
-    var authManager: AuthManager = AuthManager(context)
+    val authManager: AuthManager = koinInject()
     val user: FirebaseUser? = authManager.getCurrentUser()
-
-    var analytics: AnalyticsManager = AnalyticsManager(context)
-
 
     Screen {
         NavHost(
@@ -40,22 +38,22 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
 
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(
-                   authManager, analytics, navController,
+                   authManager, navigation = navController,
                 )
             }
             composable(route = AppScreens.HomeScreen.route) {
                 HomeScreen(
-                    authManager, analytics, navController
+                    authManager, navigation = navController
                     )
             }
             composable(route = AppScreens.RegisterScreen.route) {
                 RegisterScreen(
-                    authManager, analytics, navController,
+                    authManager, navigation = navController,
                 )
             }
             composable(route = AppScreens.ForgotPasswordScreen.route) {
                 ForgotPasswordScreen(
-                    authManager, analytics, navController,
+                    authManager, navigation = navController,
                 )
             }
 

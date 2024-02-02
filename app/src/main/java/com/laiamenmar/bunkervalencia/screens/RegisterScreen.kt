@@ -29,9 +29,10 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
-fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+fun RegisterScreen(authManager: AuthManager = koinInject(), analytics: AnalyticsManager = koinInject(), navigation: NavController) {
     val scope = rememberCoroutineScope()
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }

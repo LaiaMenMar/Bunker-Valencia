@@ -58,10 +58,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.CoroutineScope
+import org.koin.compose.koinInject
 
 
 @Composable
-fun LoginScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+fun LoginScreen(authManager: AuthManager = koinInject(), analytics: AnalyticsManager = koinInject(), navigation: NavController) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -389,17 +390,11 @@ private suspend fun incognitoSignIn(
 @Preview(showSystemUi = true)
 fun PreviewLoginScreen() {
     val navController = rememberNavController()
-    val context = LocalContext.current
-    var analytics: AnalyticsManager = AnalyticsManager(context)
-    var authManager: AuthManager = AuthManager(context)
-
 
     BunkerValenciaTheme {
         Surface {
             LoginScreen(
-                analytics = analytics,
                 navigation = navController,
-                authManager = authManager,
             )
         }
     }

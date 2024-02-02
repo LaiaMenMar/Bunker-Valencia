@@ -36,6 +36,7 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import org.koin.compose.koinInject
 
 @Composable
 fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {
@@ -61,7 +62,7 @@ fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun HomeScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+fun HomeScreen(authManager: AuthManager = koinInject(), analytics: AnalyticsManager = koinInject(), navigation: NavController) {
 
     var showDialog by remember { mutableStateOf(false) }
 
