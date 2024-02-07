@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.screens.ActionButton
+import com.laiamenmar.bunkervalencia.ui.screens.ClickableTextButton
+import com.laiamenmar.bunkervalencia.ui.screens.EmailField
+import com.laiamenmar.bunkervalencia.ui.screens.HeaderImage
+import com.laiamenmar.bunkervalencia.ui.screens.PasswordField
+import com.laiamenmar.bunkervalencia.ui.screens.TitleLogin
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
@@ -31,10 +39,14 @@ import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController) {
+fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController, loginViewModel: LoginViewModel) {
     val scope = rememberCoroutineScope()
-    var emailInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
+
+    val emailInput by loginViewModel.emailInput.collectAsState()
+    val passwordInput by loginViewModel.passwordInput.collectAsState()
+    /*var emailInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }*/
+
     var context = LocalContext.current
 
     Column(
@@ -55,25 +67,26 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
 
         EmailField(
             value = emailInput,
-            onValueChanged = { emailInput = it },
+            onValueChanged = { loginViewModel.onEmailChanged(it)},
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
 
         PasswordField(value = passwordInput,
-            onValueChange = { passwordInput = it },
+            onValueChange = { loginViewModel.onPasswordChanged(it) },
             modifier = Modifier.fillMaxWidth())
 
         Spacer(modifier = Modifier.padding(8.dp))
 
         ActionButton(
-            buttonText = "Registrese",
             onClick = {
                 scope.launch {
                     signUp(emailInput, passwordInput, authManager, analytics, context, navigation)
                 }
-            }
+            },
+            buttonText = "Registrese",
+            loginEnable = true
         )
         ClickableTextButton(
             text = "¿Ya tienes cuenta? Inicia Sesión",
@@ -115,7 +128,7 @@ private suspend fun signUp(
     }
 }
 
-
+/*
 @Preview
 @Composable
 fun PreviewRegisterScreen() {
@@ -133,4 +146,4 @@ fun PreviewRegisterScreen() {
             )
         }
     }
-}
+}*/

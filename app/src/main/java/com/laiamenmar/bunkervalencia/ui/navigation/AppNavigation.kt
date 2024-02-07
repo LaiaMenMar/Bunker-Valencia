@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseUser
+import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
 import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen1
 import com.laiamenmar.bunkervalencia.ui.screens.Screen
@@ -37,7 +38,7 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
 
             composable(route = AppScreens.LoginScreen.route) {
                 LoginScreen(
-                    authManager, analytics, navController,
+                    authManager, analytics, navController, LoginViewModel()
                 )
             }
             composable(route = AppScreens.HomeScreen.route) {
@@ -45,7 +46,7 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
                     authManager, analytics, navController
                 )
             }
-            composable(route = AppScreens.HomeScreen.route) {
+            composable(route = AppScreens.HomeScreen1.route) {
                 HomeScreen1(
                     analytics, authManager, navController
                 )
@@ -53,12 +54,12 @@ fun AppNavigation(context: Context, navController: NavHostController = rememberN
 
             composable(route = AppScreens.RegisterScreen.route) {
                 RegisterScreen(
-                    authManager, analytics, navController,
+                    authManager, analytics, navController, LoginViewModel()
                 )
             }
             composable(route = AppScreens.ForgotPasswordScreen.route) {
                 ForgotPasswordScreen(
-                    authManager, analytics, navController,
+                    authManager, analytics, navController, LoginViewModel()
                 )
             }
 
