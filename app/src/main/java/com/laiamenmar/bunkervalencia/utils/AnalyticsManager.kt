@@ -5,8 +5,11 @@ import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Inject
 
-class AnalyticsManager(context: Context) {
+/*class AnalyticsManager(context: Context) {*/
+//class AnalyticsManager @Inject constructor(context: Context) {
+    class AnalyticsManager (context: Context) {
     private val firebaseAnalytics: FirebaseAnalytics by lazy { FirebaseAnalytics.getInstance(context) }
     private fun logEvent(eventName: String, params: Bundle) {
         firebaseAnalytics.logEvent(eventName, params)

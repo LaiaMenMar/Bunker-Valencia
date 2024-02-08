@@ -18,15 +18,18 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 
 
+
 /**
  * Se encarga de la navegación entre pantallas
  */
 @Composable
-fun AppNavigation(context: Context, navController: NavHostController = rememberNavController()) {
+//fun AppNavigation (context: Context, navController: NavHostController = rememberNavController(), loginViewModel: LoginViewModel) {
+    fun AppNavigation (context: Context, navController: NavHostController = rememberNavController()) {
+
     var authManager: AuthManager = AuthManager(context)
     val user: FirebaseUser? = authManager.getCurrentUser()
 
-    var analytics: AnalyticsManager = AnalyticsManager(context)
+   var analytics: AnalyticsManager = AnalyticsManager(context)
 
 
     Screen {

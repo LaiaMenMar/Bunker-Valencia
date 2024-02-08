@@ -82,7 +82,7 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
         ActionButton(
             onClick = {
                 scope.launch {
-                    signUp(emailInput, passwordInput, authManager, analytics, context, navigation)
+                    loginViewModel.signUp(emailInput, passwordInput, authManager, analytics, context, navigation)
                 }
             },
             buttonText = "Registrese",
@@ -99,34 +99,6 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
     }
 }
 
-private suspend fun signUp(
-    email: String,
-    password: String,
-    auth: AuthManager,
-    analytics: AnalyticsManager,
-    context: Context,
-    navigation: NavController
-) {
-    if (email.isNotEmpty() && password.isNotEmpty()) {
-        when (val result = auth.createUserWithEmailandPassword(email, password)) {
-            is AuthRes.Success -> {
-                analytics.logButtonClicked(FirebaseAnalytics.Event.SIGN_UP)
-                Toast.makeText(context, "Registro existoso", Toast.LENGTH_SHORT).show()
-                /*la pantalla RegisterScreen esta encima del LoginScreen, sólo hay que cerrarla*/
-                navigation.popBackStack()
-            }
-
-            is AuthRes.Error -> {
-                analytics.logError("Error SignUp: ${result.errorMessage}")
-                Toast.makeText(context, "Error SignUp: ${result.errorMessage}", Toast.LENGTH_LONG)
-                    .show()
-            }
-        }
-
-    } else {
-        Toast.makeText(context, "Existen campos vacios", Toast.LENGTH_LONG).show()
-    }
-}
 
 /*
 @Preview

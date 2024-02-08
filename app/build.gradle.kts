@@ -1,7 +1,13 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+
+
+ //   kotlin("kapt")
+//    id("com.google.dagger.hilt.android")
 
 }
 
@@ -32,11 +38,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_19
+        targetCompatibility = JavaVersion.VERSION_19
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "19"
 
     }
     buildFeatures {
@@ -86,4 +92,10 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.5.0-alpha01")
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //inyeccion de dependencias
+  //  implementation("com.google.dagger:hilt-android:2.41")
+  //  kapt("com.google.dagger:hilt-android-compiler:2.41")
 }
+
+

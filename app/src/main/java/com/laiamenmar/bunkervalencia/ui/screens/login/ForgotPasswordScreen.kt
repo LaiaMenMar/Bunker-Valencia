@@ -71,7 +71,7 @@ fun ForgotPasswordScreen(authManager: AuthManager, analytics: AnalyticsManager, 
         ActionButton(
             onClick = {
                 scope.launch {
-                    passwordReset(emailInput, authManager, analytics, context, navigation)
+                    loginViewModel.passwordReset(emailInput, authManager, analytics, context, navigation)
                 }
             },
             buttonText = "recuperar",
@@ -88,27 +88,7 @@ fun ForgotPasswordScreen(authManager: AuthManager, analytics: AnalyticsManager, 
     }
 }
 
-private suspend fun passwordReset(
-    email: String,
-    auth: AuthManager,
-    analytics: AnalyticsManager,
-    context: Context,
-    navigation: NavController
-) {
-        when (val result = auth.resetPassword(email)) {
-            is AuthRes.Success -> {
-                analytics.logButtonClicked("Click: Reset password $email")
-                Toast.makeText(context, "Correo enviado a $email", Toast.LENGTH_SHORT)
-                    .show()
-                navigation.navigate(AppScreens.LoginScreen.route)
-                }
-            is AuthRes.Error -> {
-                analytics.logError("Error Reset password $email: ${result.errorMessage}")
-                Toast.makeText(context, "Error al enviar el correo", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-}
+
 /*
 @Preview
 @Composable

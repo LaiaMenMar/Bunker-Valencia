@@ -18,6 +18,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.laiamenmar.bunkervalencia.R
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 sealed class AuthRes<out T> {
     /**
@@ -27,7 +28,9 @@ sealed class AuthRes<out T> {
     data class Error(val errorMessage: String) : AuthRes<Nothing>()
 }
 
-class AuthManager (private val context: Context) {
+/*class AuthManager  (private val context: Context) {*/
+  //  class AuthManager  @Inject constructor(private val context: Context) {
+    class AuthManager (private val context: Context) {
     /*
     * Instancia mediante delegacion para que sólo se incialice cuando se necesatio
     * */
