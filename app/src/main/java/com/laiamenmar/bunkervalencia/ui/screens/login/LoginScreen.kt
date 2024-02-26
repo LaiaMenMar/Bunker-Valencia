@@ -24,12 +24,6 @@ import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
-import com.laiamenmar.bunkervalencia.ui.screens.ActionButton
-import com.laiamenmar.bunkervalencia.ui.screens.ClickableTextButton
-import com.laiamenmar.bunkervalencia.ui.screens.EmailField
-import com.laiamenmar.bunkervalencia.ui.screens.HeaderImage
-import com.laiamenmar.bunkervalencia.ui.screens.PasswordField
-import com.laiamenmar.bunkervalencia.ui.screens.SocialMediaButton
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch

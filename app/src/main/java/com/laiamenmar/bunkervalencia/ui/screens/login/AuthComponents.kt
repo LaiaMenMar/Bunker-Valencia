@@ -1,4 +1,4 @@
-package com.laiamenmar.bunkervalencia.ui.screens
+package com.laiamenmar.bunkervalencia.ui.screens.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

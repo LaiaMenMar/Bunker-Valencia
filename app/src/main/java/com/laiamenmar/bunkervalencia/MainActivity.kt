@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppNavigation
 import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
@@ -15,7 +16,7 @@ import com.laiamenmar.bunkervalencia.ui.theme.BunkerValenciaTheme
 //@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
-
+    private val homeViewModel: HomeViewModel by viewModels()
 
     private lateinit var analytics: FirebaseAnalytics
    /*Inject lateinit var analyticsManager: AnalyticsManager
@@ -29,8 +30,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BunkerValenciaTheme {
-                //AppNavigation(this,  rememberNavController(),  loginViewModel)
-                AppNavigation(this)
+                AppNavigation(this,  rememberNavController(),  loginViewModel, homeViewModel)
+               // AppNavigation(this)
             }
         }
     }

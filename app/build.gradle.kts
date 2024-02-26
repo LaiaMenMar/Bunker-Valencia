@@ -6,8 +6,8 @@ plugins {
     id("com.google.gms.google-services")
 
 
- //   kotlin("kapt")
-//    id("com.google.dagger.hilt.android")
+   //   kotlin("kapt")
+    // id("com.google.dagger.hilt.android")
 
 }
 
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId = "com.laiamenmar.bunkervalencia"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -38,11 +38,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "1.8"
 
     }
     buildFeatures {
@@ -86,16 +86,20 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation("androidx.navigation:navigation-compose:2.5.0-alpha01")
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     //inyeccion de dependencias
-  //  implementation("com.google.dagger:hilt-android:2.41")
-  //  kapt("com.google.dagger:hilt-android-compiler:2.41")
+    // implementation("com.google.dagger:hilt-android:2.41")
+//    kapt("com.google.dagger:hilt-android-compiler:2.41")
 }
+
+
+
 
 
