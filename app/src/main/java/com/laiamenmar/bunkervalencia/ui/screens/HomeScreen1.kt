@@ -69,6 +69,8 @@ import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.model.RouteModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.screens.home.BouldersScreen
+import com.laiamenmar.bunkervalencia.ui.screens.home.RoutesScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
@@ -91,7 +93,7 @@ fun HomeScreen1(
     analytics.logScreenView(screenName = AppScreens.HomeScreen1.route)
     val navController = rememberNavController()
 
-    val showDialogAddRoute: Boolean by homeViewModel.showDialogAddRoute.observeAsState(false)
+
     val showDialogCloseApp: Boolean by homeViewModel.showDialogCloseApp.observeAsState(false)
 
 //    initRemoteConfig()
@@ -129,19 +131,13 @@ fun HomeScreen1(
                 }, onDismiss = { homeViewModel.closeDialogCloseApp() })
             }
 
-            /* Codigo para que cuando aprietes el botón aparezca  aparezca el AddRouteDialog */
-            AddRouteDialog(
-                show = showDialogAddRoute,
-                onDismiss = { homeViewModel.showDialogAddRouteClose() },
-                onTaskAdded = { homeViewModel.onRouteAdd(it) })
-
-            // Text(text = "prueba", modifier = Modifier.align(Alignment.BottomCenter))
+                       // Text(text = "prueba", modifier = Modifier.align(Alignment.BottomCenter))
 
 
           //  RoutesList(homeViewModel)
 
 
-            BottomNavGraph(navController = navController, context = context, authManager = auth)
+            BottomNavGraph(navController = navController, context = context, authManager = auth, homeViewModel = homeViewModel)
 
 
         }
@@ -250,7 +246,6 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
-
 @Composable
 fun RowScope.AddItem(
     screens: BottomNavScreen,
@@ -272,7 +267,6 @@ fun RowScope.AddItem(
     )
 }
 
-
 sealed class BottomNavScreen(val path: String, val title: String, val icon: ImageVector) {
     object Rutas: BottomNavScreen(
         path = "rutas",
@@ -292,98 +286,22 @@ sealed class BottomNavScreen(val path: String, val title: String, val icon: Imag
 }
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, context: Context, authManager: AuthManager) {
+fun BottomNavGraph(navController: NavHostController, context: Context, authManager: AuthManager, homeViewModel: HomeViewModel) {
     val realtime = RealtimeManager(context)
    // val firestore = FirestoreManager(context)
    // val storage = CloudStorageManager(context)
     NavHost(navController = navController, startDestination = BottomNavScreen.Rutas.path) {
         composable(route = BottomNavScreen.Rutas.path) {
-            ContactsScreen(realtime = realtime, authManager = authManager)
+            RoutesScreen(realtime = realtime, authManager = authManager)
         }
-      /*  composable(route = BottomNavScreen.Note.route) {
-            ContactsScreen(realtime = realtime, authManager = authManager)
+       composable(route = BottomNavScreen.Bloques.path) {
+            BouldersScreen(realtime = realtime, authManager =authManager, homeViewModel= homeViewModel )
         }
+
+        /*
        composable(route = BottomNavScreen.Photos.route) {
             CloudStorageScreen(storage = storage)
         }*/
-    }
-}
-
-@Composable
-fun RoutesList(homeViewModel: HomeViewModel) {
-    val myRoutes: List<RouteModel> = homeViewModel.route
-    LazyColumn {
-        items(myRoutes, key = { it.uid }) { route ->
-            ItemRoute(route, homeViewModel)
-
-        }
-
-    }
-
-
-}
-
-
-@Composable
-fun ItemRoute(routaModel: RouteModel, homeViewModel: HomeViewModel) {
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        border = BorderStroke(2.dp, Color.Gray),
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Número de route: ${routaModel.uid}",
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp)
-            )
-            Checkbox(
-                checked = routaModel.selected,
-                onCheckedChange = { homeViewModel.onCheckBoxSelected(routaModel) })
-        }
-
-    }
-
-}
-
-@Composable
-fun CloseAppDialog(show: Boolean) {
-
-
-}
-
-@Composable
-fun AddRouteDialog(show: Boolean, onDismiss: () -> Unit, onTaskAdded: (String) -> Unit) {
-    var myRoute by remember { mutableStateOf("") }
-
-    if (show) {
-        Dialog(onDismissRequest = { onDismiss() }) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Ruta o Bloque",
-                    fontSize = 18.sp,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-                TextField(value = myRoute, onValueChange = { myRoute = it })
-                Spacer(modifier = Modifier.size(16.dp))
-                Button(onClick = {
-                    //añadir ruta a Firebase
-                    onTaskAdded(myRoute)
-                }, Modifier.fillMaxWidth()) {
-                    Text(text = "Añadir", fontSize = 16.sp)
-                }
-            }
-        }
     }
 }
 

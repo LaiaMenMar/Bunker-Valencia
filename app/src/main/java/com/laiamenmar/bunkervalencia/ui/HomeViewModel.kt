@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.laiamenmar.bunkervalencia.model.RouteModel
+import com.laiamenmar.bunkervalencia.model.BoulderModel
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel: ViewModel() {
     /* Botón cerrar app */
     private val _showDialogCloseApp = MutableLiveData<Boolean>()
     val showDialogCloseApp: LiveData<Boolean> = _showDialogCloseApp
@@ -19,32 +19,38 @@ class HomeViewModel : ViewModel() {
         _showDialogCloseApp.value = false
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    /* Utilizado en el botón flotante en la página de boulders */
+    private val _showDialogAdd_Boulder = MutableLiveData<Boolean>()
+    val showDialogAdd_Boulder: LiveData<Boolean> = _showDialogAdd_Boulder
 
 
-    /* Utilizado en el botón flotante */
-    private val _showDialogAddRoute = MutableLiveData<Boolean>()
-    val showDialogAddRoute: LiveData<Boolean> = _showDialogAddRoute
-
-    fun showDialogAddRouteClose() {
-        _showDialogAddRoute.value = false
+    fun showDialogAdd_Boulder_Close() {
+        _showDialogAdd_Boulder.value = false
     }
 
-    fun onRouteAdd(routename: String) {
-        _showDialogAddRoute.value = false
-       // Log.i("Laia", route)
-        _routes.add(RouteModel(routename))
+    fun onBoulder_Add(boulder: String) {
+        _showDialogAdd_Boulder.value = false
+        _boulders.add(BoulderModel(boulder = boulder))
     }
 
-    fun onShowDialogClick() {
-        _showDialogAddRoute.value = true
+
+    fun onShowDialog_Boulder_Click() {
+        _showDialogAdd_Boulder.value = true
     }
 
-    /* Utilizado en la lista de rutas */
-    fun onCheckBoxSelected(routaModel: RouteModel) {
+
+    //En la card del item
+
+    fun onCheckCardSelected(boulderModel: BoulderModel) {
+
+        //que pasa cuando seleciionas la card con el boulder
 
     }
 
-    private val _routes = mutableStateListOf<RouteModel>()
-    val route: List<RouteModel> = _routes
+   private val _boulders = mutableStateListOf<BoulderModel>()
+   val boulder: List<BoulderModel> = _boulders
+
 }
 
