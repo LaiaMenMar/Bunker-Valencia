@@ -56,7 +56,7 @@ fun BouldersScreen(
             .padding(12.dp)
     ) {
         Text(text = "Bloques")
-        AddBoulderDialog(showDialogAdd_Boulder, onDismiss = {homeViewModel.showDialogAdd_Boulder_Close()}, onTaskAdded = { homeViewModel.onBoulder_Add(it)})
+        AddBoulderDialog(showDialogAdd_Boulder, onDismiss = {homeViewModel.showDialogAdd_Boulder_Close()}, onBoulderAdded = { homeViewModel.onBoulder_Add(it)})
         FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
         BoulderList(homeViewModel)
     }
@@ -112,8 +112,8 @@ fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
 }
 
 @Composable
-fun AddBoulderDialog(show: Boolean, onDismiss: () -> Unit, onTaskAdded: (String) -> Unit) {
-    var myRoute by remember { mutableStateOf("") }
+fun AddBoulderDialog(show: Boolean, onDismiss: () -> Unit, onBoulderAdded: (String) -> Unit) {
+    var myBoulder by remember { mutableStateOf("") }
 
     if (show) {
         Dialog(onDismissRequest = { onDismiss() }) {
@@ -124,17 +124,18 @@ fun AddBoulderDialog(show: Boolean, onDismiss: () -> Unit, onTaskAdded: (String)
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Ruta o Bloque",
+                    text = "Bloque",
                     fontSize = 18.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.size(16.dp))
-                TextField(value = myRoute, onValueChange = { myRoute = it })
+                TextField(value = myBoulder, onValueChange = { myBoulder = it })
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(onClick = {
                     //añadir ruta a Firebase
-                    onTaskAdded(myRoute)
+                    onBoulderAdded(myBoulder)
+                    myBoulder = ""
                 }, Modifier.fillMaxWidth()) {
                     Text(text = "Añadir", fontSize = 16.sp)
                 }
