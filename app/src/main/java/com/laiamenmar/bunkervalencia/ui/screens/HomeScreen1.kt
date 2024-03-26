@@ -1,21 +1,16 @@
 package com.laiamenmar.bunkervalencia.ui.screens
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,9 +20,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,7 +28,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -44,16 +35,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -66,7 +54,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseUser
 import com.laiamenmar.bunkervalencia.R
-import com.laiamenmar.bunkervalencia.model.RouteModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.screens.home.BouldersScreen
@@ -94,7 +81,9 @@ fun HomeScreen1(
     val navController = rememberNavController()
 
 
-    val showDialogCloseApp: Boolean by homeViewModel.showDialogCloseApp.observeAsState(false)
+    // val showDialogCloseApp: Boolean by homeViewModel.showDialogCloseApp.observeAsState(false)
+
+    val DialogCloseApp: Boolean by homeViewModel.DialogCloseApp.observeAsState(false)
 
 //    initRemoteConfig()
 
@@ -113,31 +102,36 @@ fun HomeScreen1(
 
     Scaffold(
         topBar = {
-            TopBarWelcome(user, showDialogCloseApp, homeViewModel)
+            TopBarWelcome(user, DialogCloseApp, homeViewModel)
         },
 
         bottomBar = {
-           BottomBar(navController = navController) ;
+            BottomBar(navController = navController);
         },
 
 
         ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
-           /* Controla el dialogo para cerrar la aplicación */
-            if (showDialogCloseApp) {
+            /* Controla el dialogo para cerrar la aplicación */
+            if (DialogCloseApp) {
                 LogoutDialog(onConfirmLogout = {
                     onLogoutConfirmed()
-                    homeViewModel.closeDialogCloseApp()
-                }, onDismiss = { homeViewModel.closeDialogCloseApp() })
+                    homeViewModel.DialogCloseApp_close()
+                }, onDismiss = { homeViewModel.DialogCloseApp_close() })
             }
 
-                       // Text(text = "prueba", modifier = Modifier.align(Alignment.BottomCenter))
+            // Text(text = "prueba", modifier = Modifier.align(Alignment.BottomCenter))
 
 
-          //  RoutesList(homeViewModel)
+            //  RoutesList(homeViewModel)
 
 
-            BottomNavGraph(navController = navController, context = context, authManager = auth, homeViewModel = homeViewModel)
+            BottomNavGraph(
+                navController = navController,
+                context = context,
+                authManager = auth,
+                homeViewModel = homeViewModel
+            )
 
 
         }
@@ -203,7 +197,7 @@ fun TopBarWelcome(user: FirebaseUser?, showDialog: Boolean, homeViewModel: HomeV
         actions = {
             IconButton(
                 onClick = {
-                    homeViewModel.showDialogCloseApp()
+                    homeViewModel.DialogCloseApp_show()
                 }
             ) {
                 Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión")
@@ -227,14 +221,14 @@ fun TopBarWelcome(user: FirebaseUser?, showDialog: Boolean, homeViewModel: HomeV
 
 @Composable
 fun BottomBar(navController: NavHostController) {
-     val screens = listOf(
+    val screens = listOf(
         BottomNavScreen.Bloques,
         BottomNavScreen.Rutas,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     NavigationBar {
-      screens.forEach { screens ->
+        screens.forEach { screens ->
             if (currentDestination != null) {
                 AddItem(
                     screens = screens,
@@ -268,12 +262,13 @@ fun RowScope.AddItem(
 }
 
 sealed class BottomNavScreen(val path: String, val title: String, val icon: ImageVector) {
-    object Rutas: BottomNavScreen(
+    object Rutas : BottomNavScreen(
         path = "rutas",
         title = "Rutas",
-        icon = Icons.Default.ArrowForward)
+        icon = Icons.Default.ArrowForward
+    )
 
-    object Bloques: BottomNavScreen(
+    object Bloques : BottomNavScreen(
         path = "bloques",
         title = "Bloques",
         icon = Icons.Default.MoreVert
@@ -286,17 +281,28 @@ sealed class BottomNavScreen(val path: String, val title: String, val icon: Imag
 }
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, context: Context, authManager: AuthManager, homeViewModel: HomeViewModel) {
+fun BottomNavGraph(
+    navController: NavHostController,
+    context: Context,
+    authManager: AuthManager,
+    homeViewModel: HomeViewModel
+) {
     val realtime = RealtimeManager(context)
-   // val firestore = FirestoreManager(context)
-   // val storage = CloudStorageManager(context)
-    NavHost(navController = navController, startDestination = BottomNavScreen.Rutas.path) {
+    // val firestore = FirestoreManager(context)
+    // val storage = CloudStorageManager(context)
+    NavHost(navController = navController, startDestination = BottomNavScreen.Bloques.path) {
+        composable(route = BottomNavScreen.Bloques.path) {
+            BouldersScreen(
+                realtime = realtime,
+                authManager = authManager,
+                homeViewModel = homeViewModel
+            )
+        }
+
         composable(route = BottomNavScreen.Rutas.path) {
             RoutesScreen(realtime = realtime, authManager = authManager)
         }
-       composable(route = BottomNavScreen.Bloques.path) {
-            BouldersScreen(realtime = realtime, authManager =authManager, homeViewModel= homeViewModel )
-        }
+
 
         /*
        composable(route = BottomNavScreen.Photos.route) {

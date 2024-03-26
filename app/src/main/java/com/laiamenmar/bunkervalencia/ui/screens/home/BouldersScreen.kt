@@ -1,28 +1,34 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -31,11 +37,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.google.firebase.components.Lazy
+import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.utils.AuthManager
@@ -45,9 +54,14 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 fun BouldersScreen(
     realtime: RealtimeManager,
     authManager: AuthManager,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
-    val showDialogAdd_Boulder: Boolean by homeViewModel.showDialogAdd_Boulder.observeAsState(false)
+    // estado de dialogo para añadir bloque
+    val DialogAddBoulder: Boolean by homeViewModel.DialogAddBoulder.observeAsState(false)
+    val DialogDeleteBoulder: Boolean by homeViewModel.DialogDeleteBoulder.observeAsState(false )
+
+    /* Obtienes la lista de contactos a traves de un flujo, deberia estar en el HomeViewModel*/
+   // val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
 
     Box(
         modifier = Modifier
@@ -55,67 +69,22 @@ fun BouldersScreen(
             .background(color = Color.DarkGray)
             .padding(12.dp)
     ) {
-        Text(text = "Bloques")
-        AddBoulderDialog(showDialogAdd_Boulder, onDismiss = {homeViewModel.showDialogAdd_Boulder_Close()}, onBoulderAdded = { homeViewModel.onBoulder_Add(it)})
+        AddBoulderDialog(
+            DialogAddBoulder = DialogAddBoulder,
+            onDismiss = { homeViewModel.DialogDeleteBoulder_close() },
+           // onBoulderAdded = { homeViewModel.onBoulder_Add(realtime, ?¿?¿) },
+            authManager = authManager,
+            realtime = realtime, homeViewModel )
         FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
-        BoulderList(homeViewModel)
+        BoulderList(DialogDeleteBoulder, homeViewModel, realtime)
     }
 }
-
 @Composable
-fun BoulderList(homeViewModel: HomeViewModel) {
-    val myBoulders:List<BoulderModel> = homeViewModel.boulder
+fun AddBoulderDialog(DialogAddBoulder: Boolean, onDismiss: () -> Unit,/* onBoulderAdded: (RealtimeManager, BoulderModel) -> Unit,*/ authManager: AuthManager, realtime: RealtimeManager, homeViewModel: HomeViewModel ) {
+    var myBoulderparametro by remember { mutableStateOf("") }
+    var uid = authManager.getCurrentUser()
 
-    LazyColumn {
-        items(myBoulders, key = {it.uid}){ boulder ->
-            ItemBoulder(boulderModel = boulder , homeViewModel = homeViewModel)
-        }
-    }
-
-}
-
-@Composable
-fun ItemBoulder(boulderModel: BoulderModel, homeViewModel: HomeViewModel) {
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        border = BorderStroke(2.dp, Color.Gray),
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Número de route: ${boulderModel.uid}",
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp)
-            )
-            Checkbox(
-                checked = boulderModel.selected,
-                onCheckedChange = { homeViewModel.onCheckCardSelected(boulderModel)
-                })
-        }
-
-    }
-
-}
-
-// Elementos para añadir boulder
-@Composable
-fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
-    FloatingActionButton(onClick = {
-        homeViewModel.onShowDialog_Boulder_Click()
-    }, modifier = modifier) {
-        Icon(Icons.Filled.Add, "Añadir Boulder")
-    }
-
-}
-
-@Composable
-fun AddBoulderDialog(show: Boolean, onDismiss: () -> Unit, onBoulderAdded: (String) -> Unit) {
-    var myBoulder by remember { mutableStateOf("") }
-
-    if (show) {
+    if (DialogAddBoulder) {
         Dialog(onDismissRequest = { onDismiss() }) {
             Column(
                 Modifier
@@ -130,16 +99,171 @@ fun AddBoulderDialog(show: Boolean, onDismiss: () -> Unit, onBoulderAdded: (Stri
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.size(16.dp))
-                TextField(value = myBoulder, onValueChange = { myBoulder = it })
+                TextField(value = myBoulderparametro, onValueChange = { myBoulderparametro = it })
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(onClick = {
-                    //añadir ruta a Firebase
-                    onBoulderAdded(myBoulder)
-                    myBoulder = ""
+                    val newBoulder = BoulderModel(name = myBoulderparametro, uid_routeSeter =  uid.toString())
+                    homeViewModel.onBoulder_Add(realtime, newBoulder)
+                    //onBoulderAdded(realtime, newBoulder)
+                    myBoulderparametro = ""
+
                 }, Modifier.fillMaxWidth()) {
                     Text(text = "Añadir", fontSize = 16.sp)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BoulderList(DialogDeleteBoulder: Boolean, homeViewModel: HomeViewModel, realtime: RealtimeManager,) {
+    val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
+  //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
+
+    //(!bouldersListFlow.isNullOrEmpty())
+    if (true) {
+       LazyColumn {
+            /*items(myBouldersList, key = { it.id }) { boulder ->
+                ItemBoulder(delete = delete, boulderModel = boulder, homeViewModel = homeViewModel)
+            }*/
+           bouldersListFlow.forEach { boulder ->
+               item {
+                   ItemBoulder(DialogDeleteBoulder = DialogDeleteBoulder, realtime = realtime, homeViewModel = homeViewModel, boulder = boulder)
+               }
+           }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "No se encontraron \n bloques",
+                fontSize = 18.sp, fontWeight = FontWeight.Thin, textAlign = TextAlign.Center
+            )
+        }
+    }
+
+}
+
+@Composable
+fun ItemBoulder(DialogDeleteBoulder: Boolean, realtime: RealtimeManager, homeViewModel: HomeViewModel, boulder: BoulderModel) {
+    // esto deberia estar en el view model
+    val onDeleteBoulderConfirmed: () -> Unit = {}
+
+    DeleteBoulderDialog(
+        DialogDeleteBoulder = DialogDeleteBoulder,
+        onDismiss = { homeViewModel.DialogDeleteBoulder_close() },
+        onBoulderConfirmDelete = { homeViewModel.onBoulder_Delete(realtime, boulder) })
+
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        border = BorderStroke(2.dp, Color.Gray),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.bloque),
+                contentDescription = "",
+                modifier = Modifier.weight(1f)
+            )
+            Column(modifier = Modifier.weight(3f)) {
+                Text(
+                    text = boulder.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    /*  modifier = Modifier
+                          .padding(horizontal = 4.dp)*/
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = boulder.uid_routeSeter,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                /* Checkbox(
+                     checked = boulderModel.selected,
+                     onCheckedChange = { homeViewModel.onCheckCardSelected(boulderModel)
+                     })*/
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    IconButton(
+                        onClick = {
+                            homeViewModel.DialogDeleteBoulder_show()
+
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar bloque"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Elementos para añadir boulder
+@Composable
+fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
+    FloatingActionButton(onClick = {
+        homeViewModel.DialogAddBoulder_show()
+    }, modifier = modifier) {
+        Icon(Icons.Filled.Add, "Añadir Bloque")
+    }
+
+}
+
+
+
+@Composable
+fun DeleteBoulderDialog(DialogDeleteBoulder: Boolean, onDismiss: () -> Unit, onBoulderConfirmDelete: () -> Unit) {
+    if (DialogDeleteBoulder) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Eliminar bloque") },
+            text = { Text("¿Estás seguro que deseas eliminar el bloque?") },
+            confirmButton = {
+                Button(
+                    onClick = onBoulderConfirmDelete
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = onDismiss
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

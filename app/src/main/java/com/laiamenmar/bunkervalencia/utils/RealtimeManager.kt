@@ -6,39 +6,54 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.laiamenmar.bunkervalencia.model.BoulderModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class RealtimeManager(context: Context) {
-    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("contacts")
+class RealtimeManager (context: Context) {
+    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("boulders")
     private val authManager = AuthManager(context)
 
-   /* fun addContact(contact: Contact) {
-        val key = databaseReference.push().key
+
+    /* Boulder metodos*/
+   fun addBoulder(boulder: BoulderModel) {
+        val key = databaseReference.push().key //crea la clave
         if (key != null) {
-            databaseReference.child(key).setValue(contact)
+            databaseReference.child(key).setValue(boulder)
         }
     }
 
-    fun deleteContact(contactId: String) {
-        databaseReference.child(contactId).removeValue()
+    fun deleteBoulder(boulderKey: String) {
+        databaseReference.child(boulderKey).removeValue()
     }
 
-    fun updateContact(contactId: String, updatedContact: Contact) {
-        databaseReference.child(contactId).setValue(updatedContact)
+/*
+    fun updateContact(boulderKey: String, updatedBoulder: BoulderModel) {
+        databaseReference.child(boulderKey).setValue(updatedBoulder)
     }
+*/
 
-    fun getContactsFlow(): Flow<List<Contact>> {
-        val idFilter = authManager.getCurrentUser()?.uid
+
+    /* Listado de boulders, flujo continuo de datos, producir, transformar y consumir de manera asincrona. */
+
+    fun getBouldersFlow(): Flow<List<BoulderModel>> {
+        //en el ejemplo sólo se muestran los contactos del ususario logeado
+       // val idFilter = authManager.getCurrentUser()?.uid
         val flow = callbackFlow {
-            val listener = databaseReference.addValueEventListener(object : ValueEventListener {
+            // recibes actualizaciones inmediatas si hay cambio en la bbdd
+            val listener = databaseReference.addValueEventListener(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val contacts = snapshot.children.mapNotNull {  snapshot ->
-                        val contact = snapshot.getValue(Contact::class.java)
-                        snapshot.key?.let { contact?.copy(key = it) }
+                    //snapshot, captura de los datos en ese momento. Hay que convertirlo en una lista de objetos boulder
+                    val boulders = snapshot.children.mapNotNull {  snapshot ->
+                        val boulder = snapshot.getValue(BoulderModel::class.java)
+                        // para obtener la key del boulder
+                        snapshot.key?.let { boulder?.copy(key = it) }
                     }
-                    trySend(contacts.filter { it.uid == idFilter }).isSuccess
+
+
+                    trySend(boulders).isSuccess
+                  //  trySend(boulders.filter { it.uid == idFilter }).isSuccess
                 }
                 override fun onCancelled(error: DatabaseError) {
                     close(error.toException())
@@ -47,5 +62,5 @@ class RealtimeManager(context: Context) {
             awaitClose { databaseReference.removeEventListener(listener) }
         }
         return flow
-    }*/
+    }
 }

@@ -67,6 +67,7 @@ sealed class AuthRes<out T> {
         signInClient.signOut()
     }
 
+    /*Ususario actual logeado en la app*/
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }

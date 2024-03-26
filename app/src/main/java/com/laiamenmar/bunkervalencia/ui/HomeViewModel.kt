@@ -5,52 +5,78 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.laiamenmar.bunkervalencia.model.BoulderModel
+import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
 class HomeViewModel: ViewModel() {
+    /* Géstion de los Dialog */
+
     /* Botón cerrar app */
-    private val _showDialogCloseApp = MutableLiveData<Boolean>()
-    val showDialogCloseApp: LiveData<Boolean> = _showDialogCloseApp
+    private val _DialogCloseApp = MutableLiveData<Boolean>()
+    val DialogCloseApp: LiveData<Boolean> = _DialogCloseApp
 
-    fun showDialogCloseApp() {
-        _showDialogCloseApp.value = true
+    fun DialogCloseApp_show() {
+        _DialogCloseApp.value = true
+    }
+    fun DialogCloseApp_close() {
+        _DialogCloseApp.value = false
     }
 
-    fun closeDialogCloseApp() {
-        _showDialogCloseApp.value = false
+                                    /* ScreenBoulders*/
+    private val _boulders = mutableStateListOf<BoulderModel>()
+    val boulder: List<BoulderModel> = _boulders
+
+
+    /* Añadir boulder */
+    private val _DialogAddBoulder = MutableLiveData<Boolean>()
+    val DialogAddBoulder: LiveData<Boolean> = _DialogAddBoulder
+
+    fun DialogAddBoulder_close() {
+        _DialogAddBoulder.value = false
+    }
+    fun DialogAddBoulder_show() {
+        _DialogAddBoulder.value = true
+    }
+    fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
+        realtime.addBoulder(boulder)
+        _DialogAddBoulder.value = false
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    /* Utilizado en el botón flotante en la página de boulders */
-    private val _showDialogAdd_Boulder = MutableLiveData<Boolean>()
-    val showDialogAdd_Boulder: LiveData<Boolean> = _showDialogAdd_Boulder
-
-
-    fun showDialogAdd_Boulder_Close() {
-        _showDialogAdd_Boulder.value = false
+    fun addBoulderParams(name: String, uid: String, realtime: RealtimeManager) {
+        val newBoulder = BoulderModel(name = name, uid_routeSeter = uid)
+        realtime.addBoulder(newBoulder)
+        _DialogAddBoulder.value = false
     }
 
-    fun onBoulder_Add(boulder: String) {
-        _showDialogAdd_Boulder.value = false
-        _boulders.add(BoulderModel(boulder = boulder))
+    /* Borrar boulder */
+    private val _DialogDeleteBoulder = MutableLiveData<Boolean>()
+    val DialogDeleteBoulder: LiveData<Boolean> = _DialogDeleteBoulder
+
+    fun DialogDeleteBoulder_close() {
+        _DialogDeleteBoulder.value = false
     }
 
+    fun DialogDeleteBoulder_show() {
+        _DialogDeleteBoulder.value = true
+    }
 
-    fun onShowDialog_Boulder_Click() {
-        _showDialogAdd_Boulder.value = true
+    fun onBoulder_Delete(realtime: RealtimeManager, boulder: BoulderModel) {
+        realtime.deleteBoulder(boulder.key ?: "")
+        _DialogDeleteBoulder.value = false
     }
 
 
     //En la card del item
-
     fun onCheckCardSelected(boulderModel: BoulderModel) {
-
         //que pasa cuando seleciionas la card con el boulder
 
     }
 
-   private val _boulders = mutableStateListOf<BoulderModel>()
-   val boulder: List<BoulderModel> = _boulders
+
+
+
+
+
+
 
 }
 
