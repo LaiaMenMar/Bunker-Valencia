@@ -41,11 +41,11 @@ class HomeViewModel: ViewModel() {
         _DialogAddBoulder.value = false
     }
 
-    fun addBoulderParams(name: String, uid: String, realtime: RealtimeManager) {
-        val newBoulder = BoulderModel(name = name, uid_routeSeter = uid)
+  /*  fun addBoulderParams(note: String, uid: String, grade: String, realtime: RealtimeManager) {
+        val newBoulder = BoulderModel(note = name, uid_routeSeter = uid)
         realtime.addBoulder(newBoulder)
         _DialogAddBoulder.value = false
-    }
+    }*/
 
     /* Borrar boulder */
     private val _DialogDeleteBoulder = MutableLiveData<Boolean>()
@@ -73,10 +73,28 @@ class HomeViewModel: ViewModel() {
 
 
 
+    /* Parámetros del Objeto boulder */
+    private val _noteInput = MutableLiveData<String>()
+    val noteInput: LiveData<String> = _noteInput
 
+    private val _wallInput = MutableLiveData<String>()
+    val wallInput: LiveData<String> = _wallInput
 
+    private val _gradeInput = MutableLiveData<String>()
+    val gradeInput: LiveData<String> = _gradeInput
 
+    private val _activeInput = MutableLiveData<Boolean>()
+    val activeInput: LiveData<Boolean> = _activeInput
 
+    fun onBoulderChanged(note: String, wall: String, active: Boolean, grade: String) {
+        _noteInput.value = note
+        _wallInput.value = wall
+        _activeInput.value = active
+        _gradeInput.value = grade
+
+        //aqui funciones de habilitar por ejemplo
+
+    }
 
 }
 
