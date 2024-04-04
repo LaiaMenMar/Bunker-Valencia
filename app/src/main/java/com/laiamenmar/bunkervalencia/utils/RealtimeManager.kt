@@ -1,6 +1,7 @@
 package com.laiamenmar.bunkervalencia.utils
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -17,7 +18,9 @@ class RealtimeManager (context: Context) {
 
 
     /* Boulder metodos*/
-   fun addBoulder(boulder: BoulderModel) {
+  // fun addBoulder(boulder: LiveData<BoulderModel>) {
+        fun addBoulder(boulder: BoulderModel) {
+
         val key = databaseReference.push().key //crea la clave
         if (key != null) {
             databaseReference.child(key).setValue(boulder)
@@ -50,8 +53,6 @@ class RealtimeManager (context: Context) {
                         // para obtener la key del boulder
                         snapshot.key?.let { boulder?.copy(key = it) }
                     }
-
-
                     trySend(boulders).isSuccess
                   //  trySend(boulders.filter { it.uid == idFilter }).isSuccess
                 }
