@@ -29,8 +29,7 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
 
     val emailInput by loginViewModel.emailInput.collectAsState()
     val passwordInput by loginViewModel.passwordInput.collectAsState()
-    /*var emailInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }*/
+
 
     var context = LocalContext.current
 
@@ -84,23 +83,3 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
     }
 }
 
-
-/*
-@Preview
-@Composable
-fun PreviewRegisterScreen() {
-    val navController = rememberNavController()
-    val context = LocalContext.current
-    var analytics: AnalyticsManager = AnalyticsManager(context)
-    var authManager: AuthManager = AuthManager(context)
-
-    BunkerValenciaTheme {
-        Surface {
-            RegisterScreen(
-                analytics = analytics,
-                navigation = navController,
-                authManager = authManager,
-            )
-        }
-    }
-}*/

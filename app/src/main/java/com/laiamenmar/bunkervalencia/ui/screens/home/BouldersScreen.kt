@@ -34,6 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,9 +48,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.laiamenmar.bunkervalencia.model.BoulderModel
+import com.laiamenmar.bunkervalencia.model.Constants_Climb
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_1
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_2
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_4
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_5
+import com.laiamenmar.bunkervalencia.ui.theme.difficulty_6
 
 
 @Composable()
@@ -97,12 +107,17 @@ fun AddBoulderDialog(
     val grade: String by homeViewModel.gradeInput.observeAsState(initial = "6a")
     val active: Boolean by homeViewModel.activeInput.observeAsState(initial = true)
 
+
+    var sliderPosition by remember { mutableStateOf(6f) }
+    var dialogBackgroundColor by remember { mutableStateOf(Color.Red) }
+
+
     if (dialogAddBoulder) {
         Dialog(onDismissRequest = { onDismiss() }) {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(dialogBackgroundColor)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -138,7 +153,7 @@ fun AddBoulderDialog(
 
                 Spacer(modifier = Modifier.size(8.dp))
 
-                DifficultySlider(
+         /*       DifficultySlider(
                     grade
                 ) {
                     homeViewModel.onBoulderChanged(
@@ -148,7 +163,22 @@ fun AddBoulderDialog(
                         it,
                         uid.toString()
                     )
-                }
+                }*/
+                DifficultySlider(
+                    grade,
+                    onValueChanged = { homeViewModel.onBoulderChanged(
+                        noteRouteSeter,
+                        wall,
+                        active,
+                        it,
+                        uid.toString()
+                    )},
+                    onSliderValueChanged = { sliderValue ->
+                        sliderPosition = sliderValue
+                       dialogBackgroundColor = getColorForPosition(Constants_Climb.routeGrades[sliderValue.toInt()])
+                    }
+                )
+
 
                 NoteTextField(
                     noteRouteSeter
@@ -265,16 +295,24 @@ fun ItemBoulder(
                     )
                 }
                 Column (){
+                    val buttonColors = if (boulder.color == "difficulty_6") {
+                        ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                            containerColor = getColorlikeColor(boulder.color)
+                        )
+                    } else {
+                        ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            containerColor = getColorlikeColor(boulder.color)
+                        )
+                    }
                     Button(
                         onClick = { /* Manejar el evento del clic */ },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
                             .padding(horizontal = 16.dp),
-
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.White
-                        )
+                        colors = buttonColors
                     ) {
                         Text(
                             text = boulder.grade,
@@ -351,11 +389,6 @@ fun ItemBoulder(
     }
 }
 
-
-
-
-
-
 // Elementos para añadir boulder
 @Composable
 fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
@@ -395,6 +428,32 @@ fun DeleteBoulderDialog(
         )
     }
 }
+
+fun getColorlikeColor(colorString: String): Color {
+    return when (colorString) {
+        "difficulty_1" -> difficulty_1
+        "difficulty_2" -> difficulty_2
+        "difficulty_3" -> difficulty_3
+        "difficulty_4" -> difficulty_4
+        "difficulty_5" -> difficulty_5
+        "difficulty_6" -> difficulty_6
+        else -> Color.Gray
+    }
+}
+
+fun getColorForPosition(grade: String): Color {
+    return when (grade) {
+        "4a", "4b", "4c" -> difficulty_1
+        "5a", "5b", "5c" -> difficulty_2
+        "6a", "6a+", "6b", "6b+", -> difficulty_3
+        "6c", "6c+", "7a", "7a+",   -> difficulty_4
+        "7b", "7b+", "7c", "7c+" -> difficulty_5
+        "8a", "8a+", "8b", "8b+", "8c", "8c+" -> difficulty_6
+        else -> Color.DarkGray
+    }
+}
+
+
 
 
 

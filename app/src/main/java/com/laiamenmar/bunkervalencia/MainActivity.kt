@@ -22,28 +22,14 @@ class MainActivity : ComponentActivity() {
    /*Inject lateinit var analyticsManager: AnalyticsManager
     @Inject lateinit var authManager: AuthManager*/
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         analytics = Firebase.analytics
 
         setContent {
             BunkerValenciaTheme {
                 AppNavigation(this,  rememberNavController(),  loginViewModel, homeViewModel)
-               // AppNavigation(this)
             }
         }
     }
-
-
 }
-/**
-
-@Preview()
-@Composable
-fun DefautlPreview(){
-    BunkerValenciaTheme {
-        AppNavigation()
-    }
-}*/

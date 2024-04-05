@@ -103,8 +103,30 @@ fun Walls_DropDownMenu(value: String, onValueChanged: (String) -> Unit) {
             }
     }
 }
+@Composable
+fun DifficultySlider(value: String, onValueChanged: (String) -> Unit, onSliderValueChanged: (Float) -> Unit) {
+    var sliderPosition by remember { mutableStateOf(6f) }
+    val grades = Constants_Climb.routeGrades
 
-@SuppressLint("SuspiciousIndentation")
+    Text(text = "Grado: $value")
+    Spacer(modifier = Modifier.height(4.dp))
+    Slider(
+        value = sliderPosition,
+        onValueChange = {
+            sliderPosition = it
+            //  val newGrade = grades[it.toInt()]
+            onValueChanged(grades[it.toInt()])
+            onSliderValueChanged(it)
+        },
+        valueRange = 0f..(grades.size - 1).toFloat(),
+        steps = grades.size - 1,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+
+
+/*
 @Composable
 fun DifficultySlider(value: String, onValueChanged: (String) -> Unit) {
     var sliderPosition by remember { mutableStateOf(6f)}
@@ -123,7 +145,7 @@ fun DifficultySlider(value: String, onValueChanged: (String) -> Unit) {
             steps = grades.size - 1,
             modifier = Modifier.fillMaxWidth()
         )
-}
+}*/
 
 
 @Composable
@@ -169,27 +191,6 @@ fun SocialIcon(
 
 
 
-fun getColorNameForGradePosition(position: Int): String {
-    return when (position) {
-        in 0..5 -> "Blanco" // 4a a 5c
-        in 6..11 -> "Verde" // 6a a 6c+
-        in 12..17 -> "Naranja" // 7a a 7c+
-        in 18..21 -> "Morado" // 8a a 8b+
-        in 22..23 -> "Negro" // 8c y 8c+
-        else -> "Color no definido" // Manejo de casos no definidos
-    }
-}
-
-fun getColorFromString(colorName: String): Color {
-    return when (colorName.lowercase()) {
-        "blanco" -> Color.White
-        "verde" -> Color.Green
-        "naranja" -> Color(0xFFF44336)
-        "morado" -> Color(0xFF673AB7)
-        "negro" -> Color.Black
-        else -> Color.Gray // Color por defecto en caso de que el nombre no sea reconocido
-    }
-}
 
 
 

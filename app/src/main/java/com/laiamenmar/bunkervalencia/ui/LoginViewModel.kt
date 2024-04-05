@@ -18,25 +18,8 @@ import com.laiamenmar.bunkervalencia.utils.AuthRes
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-import javax.inject.Inject
-
-//@HiltViewModel
-
 class LoginViewModel:ViewModel() {
 //class LoginViewModel @Inject constructor() :ViewModel() {
-
-
-    /*  private val _email = MutableLiveData<String>()
-    val email: LiveData<String> = _email
-
-    private val _password = MutableLiveData<String>()
-    val password: LiveData<String> = _password
-
-    private val _isLoginEnable = MutableLiveData<Boolean>()
-    val isLoginEnable: LiveData<Boolean> = _isLoginEnable*/
-
-
     private val _emailInput = MutableStateFlow("")
     val emailInput: StateFlow<String> = _emailInput
 
@@ -53,7 +36,6 @@ class LoginViewModel:ViewModel() {
             "Flujos de datos inicializados: emailInput=${_emailInput.value}, passwordInput=${_passwordInput.value}, isLoginEnable=${_isLoginEnable.value}"
         )
     }
-
 
     fun onLoginChanged(email: String, password: String) {
         _emailInput.value = email
@@ -89,7 +71,7 @@ class LoginViewModel:ViewModel() {
             when (val result = auth.signInWithEmailAndPassword(email, password)) {
                 is AuthRes.Success -> {
                     analytics.logButtonClicked("Click: Iniciar sesion correo y Contraseña")
-                    navigation.navigate(AppScreens.HomeScreen1.route) {
+                    navigation.navigate(AppScreens.HomeScreen.route) {
                         popUpTo(AppScreens.LoginScreen.route) {
                             inclusive = true
                         }
@@ -160,8 +142,6 @@ class LoginViewModel:ViewModel() {
                 Toast.makeText(context, "Error al enviar el correo", Toast.LENGTH_SHORT)
                     .show()
             }
-
-            else -> {Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show()}
         }
     }
 
@@ -169,13 +149,12 @@ class LoginViewModel:ViewModel() {
     suspend fun incognitoSignIn(
         auth: AuthManager,
         analytics: AnalyticsManager,
-        context: Context,
         navigation: NavController
     ) {
         when (val result = auth.singInAnonymously()) {
             is AuthRes.Success -> {
                 analytics.logButtonClicked("Click: Continuar como invitado")
-                navigation.navigate(AppScreens.HomeScreen1.route) {
+                navigation.navigate(AppScreens.HomeScreen.route) {
                     popUpTo(AppScreens.LoginScreen.route) {
                         inclusive = true
                     }
@@ -185,8 +164,6 @@ class LoginViewModel:ViewModel() {
             is AuthRes.Error -> {
                 analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
             }
-
-            else -> {Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show()}
         }
     }
 
@@ -203,7 +180,7 @@ class LoginViewModel:ViewModel() {
                 val fireUser = auth.signInWithGoogleCredential(credential)
                 if (fireUser != null) {
                     Toast.makeText(context, "Bienvenidx", Toast.LENGTH_SHORT).show()
-                    navigation.navigate(AppScreens.HomeScreen1.route) {
+                    navigation.navigate(AppScreens.HomeScreen.route) {
                         popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
                     }
                 }

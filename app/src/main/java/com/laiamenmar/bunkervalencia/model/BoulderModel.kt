@@ -7,8 +7,8 @@ data class BoulderModel(
     val uid_routeSeter: String = "",
     val wall_id: String,
     val grade: String,
-    val active: Boolean
-    //color
+    val active: Boolean,
+    val color: String = ""
     //repeticiones,
    // var selected: () -> Unit = false //check de la card
 

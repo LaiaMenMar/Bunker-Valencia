@@ -1,11 +1,13 @@
 package com.laiamenmar.bunkervalencia.ui
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.laiamenmar.bunkervalencia.model.BoulderModel
+import com.laiamenmar.bunkervalencia.ui.theme.*
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,8 +69,13 @@ class HomeViewModel: ViewModel() {
     private val _gradeInput = MutableLiveData<String>()
     val gradeInput: LiveData<String> = _gradeInput
 
+    private val _gradeColor = MutableLiveData<String>()
+    val gradeColor: LiveData<String> = _gradeColor
+
     private val _activeInput = MutableLiveData<Boolean>()
     val activeInput: LiveData<Boolean> = _activeInput
+
+
 
     private val _boulder = MutableLiveData<BoulderModel>()
     val boulder: LiveData<BoulderModel> = _boulder
@@ -97,27 +104,68 @@ class HomeViewModel: ViewModel() {
             grade: String,
             ui: String
         ) {
+        val color: String = getColorForGrade(grade)
             _noteInput.value = note
             _wallInput.value = wall
             _activeInput.value = active
             _gradeInput.value = grade
+
+            _gradeColor.value = color
 
             _boulder.value = BoulderModel(
                 note = note,
                 uid_routeSeter = ui,
                 wall_id = wall,
                 grade = grade,
-                active = active
+                active = active,
+                color = color
             )
-
-            //aqui funciones de habilitar por ejemplo
         }
+
+
+    fun getColorForGrade(grade: String): String {
+        return when (grade) {
+            "4a", "4b", "4c" -> "difficulty_1"
+            "5a", "5b", "5c" -> "difficulty_2"
+            "6a", "6a+", "6b", "6b+", -> "difficulty_3"
+            "6c", "6c+", "7a", "7a+",   -> "difficulty_4"
+            "7b", "7b+", "7c", "7c+" -> "difficulty_5"
+            "8a", "8a+", "8b", "8b+", "8c", "8c+" -> "difficulty_6"
+            else -> "Color no definido"
+        }
+    }
+
+
+    /*
+    fun getColorForPosition(position: Int): Color {
+        return when (position) {
+            in 0..5 -> "dificultad_1" // 4a a 5c
+            in 6..11 -> "dificultad_2" // 6a a 6c+
+            in 12..17 -> "dificultad_3" // 7a a 7c+
+            in 18..21 -> "dificultad_4" // 8a a 8b+
+            in 22..23 -> "dificultad_5" // 8c y 8c+
+            else -> "Color no definido" // Manejo de casos no definidos
+        }
+    }
+*/
+    fun getColorFromString(colorName: String): Color {
+        return when (colorName.lowercase()) {
+            "blanco" -> Color.White
+            "verde" -> Color.Green
+            "naranja" -> Color(0xFFF44336)
+            "morado" -> Color(0xFF673AB7)
+            "negro" -> Color.Black
+            else -> Color.Gray // Color por defecto en caso de que el nombre no sea reconocido
+        }
+    }
 
         fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
             realtime.addBoulder(boulder)
             _noteInput.value = ""
             _DialogAddBoulder.value = false
         }
+
+
 
         /*  fun addBoulderParams(note: String, uid: String, grade: String, realtime: RealtimeManager) {
           val newBoulder = BoulderModel(note = name, uid_routeSeter = uid)
