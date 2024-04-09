@@ -22,9 +22,10 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
  */
 @Composable
 fun AppNavigation (context: Context, navController: NavHostController = rememberNavController(), loginViewModel: LoginViewModel, homeViewModel: HomeViewModel) {
-    val authManager = AuthManager(context)
+
     val analytics = AnalyticsManager(context)
     val realtime = RealtimeManager(context)
+    val authManager = AuthManager(context, realtime)
 
     Screen {
         NavHost(

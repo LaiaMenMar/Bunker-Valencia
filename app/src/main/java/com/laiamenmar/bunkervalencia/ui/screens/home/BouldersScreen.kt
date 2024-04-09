@@ -2,7 +2,6 @@ package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -67,9 +65,10 @@ fun BouldersScreen(
     homeViewModel: HomeViewModel,
 ) {
     val boulder: BoulderModel? by homeViewModel.boulder.observeAsState()
+
     // estado de dialogo para añadir bloque
-    val DialogAddBoulder: Boolean by homeViewModel.DialogAddBoulder.observeAsState(false)
-    val DialogDeleteBoulder: Boolean by homeViewModel.DialogDeleteBoulder.observeAsState(false)
+    val dialogAddBoulder: Boolean by homeViewModel.dialogAddBoulder.observeAsState(false)
+    val dialogDeleteBoulder: Boolean by homeViewModel.dialogDeleteBoulder.observeAsState(false)
 
     /* Obtienes la lista de contactos a traves de un flujo, deberia estar en el HomeViewModel*/
     // val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
@@ -81,10 +80,10 @@ fun BouldersScreen(
             .background(color = Color.DarkGray)
             .padding(12.dp)
     ) {
-        BoulderList(DialogDeleteBoulder, homeViewModel, realtime)
+        BoulderList(dialogDeleteBoulder, homeViewModel, realtime)
         AddBoulderDialog(
-            dialogAddBoulder = DialogAddBoulder,
-            onDismiss = { homeViewModel.DialogAddBoulder_close() },
+            dialogAddBoulder = dialogAddBoulder,
+            onDismiss = { homeViewModel.dialogAddBoulder_close() },
             onAdd = { boulder?.let { homeViewModel.onBoulder_Add(realtime, it) } },
             authManager = authManager,
             homeViewModel = homeViewModel
@@ -393,7 +392,7 @@ fun ItemBoulder(
 @Composable
 fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
     FloatingActionButton(onClick = {
-        homeViewModel.DialogAddBoulder_show()
+        homeViewModel.dialogAddBoulder_show()
     }, modifier = modifier) {
         Icon(Icons.Filled.Add, "Añadir Bloque")
     }

@@ -1,6 +1,5 @@
 package com.laiamenmar.bunkervalencia.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -64,12 +63,8 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
 //private lateinit var mFirebaseRemoteConfig: FirebaseRemoteConfig
 private var welcomeMessage by mutableStateOf("Bienvenidx")
-private var isButtonVisible by mutableStateOf(true)
+//private var isButtonVisible by mutableStateOf(true)
 
-val WELCOME_MESSAGE_KEY = "welcome_message"
-val IS_BUTTON_VISIBLE_KEY = "is_button_visible"
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     analytics: AnalyticsManager,
@@ -79,17 +74,16 @@ fun HomeScreen(
     realtime: RealtimeManager
 ) {
     analytics.logScreenView(screenName = AppScreens.HomeScreen.route)
+
+    /*Este nav Contorler es para pasar de la screen de rutas a la scrren de boulder*/
     val navController = rememberNavController()
 
-    // val showDialogCloseApp: Boolean by homeViewModel.showDialogCloseApp.observeAsState(false)
-
-    val DialogCloseApp: Boolean by homeViewModel.DialogCloseApp.observeAsState(false)
-
+    val dialogCloseApp: Boolean by homeViewModel.dialogCloseApp.observeAsState(false)
 //    initRemoteConfig()
+    //  val context = LocalContext.current
 
     val user = auth.getCurrentUser()
 
-    val context = LocalContext.current
 
     val onLogoutConfirmed: () -> Unit = {
         auth.signOut()
@@ -102,46 +96,37 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopBarWelcome(user, DialogCloseApp, homeViewModel)
+            TopBarWelcome(user = user, homeViewModel = homeViewModel)
         },
 
         bottomBar = {
-            BottomBar(navController = navController);
+            BottomBar(navController = navController)
         },
 
 
         ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             /* Controla el dialogo para cerrar la aplicación */
-            if (DialogCloseApp) {
+            if (dialogCloseApp) {
                 LogoutDialog(onConfirmLogout = {
                     onLogoutConfirmed()
-                    homeViewModel.DialogCloseApp_close()
-                }, onDismiss = { homeViewModel.DialogCloseApp_close() })
+                    homeViewModel.dialogCloseApp_close()
+                }, onDismiss = { homeViewModel.dialogCloseApp_close() })
             }
-
-            // Text(text = "prueba", modifier = Modifier.align(Alignment.BottomCenter))
-
-
-            //  RoutesList(homeViewModel)
-
 
             BottomNavGraph(
                 navController = navController,
-                context = context,
                 authManager = auth,
                 homeViewModel = homeViewModel,
                 realtime = realtime
             )
-
-
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarWelcome(user: FirebaseUser?, showDialog: Boolean, homeViewModel: HomeViewModel) {
+fun TopBarWelcome(user: FirebaseUser?, homeViewModel: HomeViewModel) {
     TopAppBar(
         title = {
             Row(
@@ -177,7 +162,7 @@ fun TopBarWelcome(user: FirebaseUser?, showDialog: Boolean, homeViewModel: HomeV
 
                 Column {
                     Text(
-                        text = if (!user?.displayName.isNullOrEmpty()) "Hola, ${user?.displayName}" else "Bienvenido",
+                        text = if (!user?.displayName.isNullOrEmpty()) welcomeMessage + user?.displayName else welcomeMessage,
                         fontSize = 20.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -198,7 +183,7 @@ fun TopBarWelcome(user: FirebaseUser?, showDialog: Boolean, homeViewModel: HomeV
         actions = {
             IconButton(
                 onClick = {
-                    homeViewModel.DialogCloseApp_show()
+                    homeViewModel.dialogCloseApp_show()
                 }
             ) {
                 Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión")
@@ -283,7 +268,6 @@ sealed class BottomNavScreen(val path: String, val title: String, val icon: Imag
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
-    context: Context,
     authManager: AuthManager,
     homeViewModel: HomeViewModel,
     realtime: RealtimeManager
@@ -311,7 +295,6 @@ fun BottomNavGraph(
         }*/
     }
 }
-
 
 @Composable
 fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {

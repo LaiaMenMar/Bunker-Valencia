@@ -18,7 +18,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.laiamenmar.bunkervalencia.R
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 sealed class AuthRes<out T> {
     /**
@@ -30,7 +29,7 @@ sealed class AuthRes<out T> {
 
 /*class AuthManager  (private val context: Context) {*/
   //  class AuthManager  @Inject constructor(private val context: Context) {
-    class AuthManager (private val context: Context) {
+    class AuthManager (private val context: Context, private val realtimeManager: RealtimeManager) {
     /*
     * Instancia mediante delegacion para que sólo se incialice cuando se necesatio
     * */
@@ -56,12 +55,23 @@ sealed class AuthRes<out T> {
     ): AuthRes<FirebaseUser?> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
+
+            val userId = result.user?.uid
+            val displayName = result.user?.email?.split("@")?.get(0)
+            realtimeManager.createUser(displayName, userId.toString())
+
+
+           // if (userId != null) {
+             //   val user = UserModel(userId, name) // Suponiendo que UserModel es tu modelo de datos para los usuarios
+                // Agrega el usuario a la colección de usuarios en Firebase
+               // addUser(user)
+            //}
+
             AuthRes.Success(result.user ?: throw Exception("Error al iniciar sesión"))
         } catch (e: Exception) {
             AuthRes.Error(e.message ?: "Error al iniciar sesión")
         }
     }
-
     fun signOut() {
         auth.signOut()
         signInClient.signOut()

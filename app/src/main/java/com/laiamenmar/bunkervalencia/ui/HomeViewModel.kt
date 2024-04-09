@@ -17,41 +17,44 @@ class HomeViewModel: ViewModel() {
     /* Géstion de los Dialog */
 
     /* Botón cerrar app */
-    private val _DialogCloseApp = MutableLiveData<Boolean>()
-    val DialogCloseApp: LiveData<Boolean> = _DialogCloseApp
+    private val _dialogCloseApp = MutableLiveData<Boolean>()
+    val dialogCloseApp: LiveData<Boolean> = _dialogCloseApp
 
-    fun DialogCloseApp_show() {
-        _DialogCloseApp.value = true
+    fun dialogCloseApp_show() {
+        _dialogCloseApp.value = true
     }
 
-    fun DialogCloseApp_close() {
-        _DialogCloseApp.value = false
+    fun dialogCloseApp_close() {
+        _dialogCloseApp.value = false
     }
 
     /* ScreenBoulders*/
-    /* Añadir boulder */
-    private val _DialogAddBoulder = MutableLiveData<Boolean>()
-    val DialogAddBoulder: LiveData<Boolean> = _DialogAddBoulder
-
-    fun DialogAddBoulder_close() {
-        _DialogAddBoulder.value = false
+    /* Dialogo para añadir boulder */
+    private val _dialogAddBoulder = MutableLiveData<Boolean>()
+    val dialogAddBoulder: LiveData<Boolean> = _dialogAddBoulder
+    fun dialogAddBoulder_close() {
+        _dialogAddBoulder.value = false
+    }
+    fun dialogAddBoulder_show() {
+        _dialogAddBoulder.value = true
     }
 
-    fun DialogAddBoulder_show() {
-        _DialogAddBoulder.value = true
+    /* Dialogo para Borrar boulder */
+    private val _dialogDeleteBoulder = MutableLiveData<Boolean>()
+    val dialogDeleteBoulder: LiveData<Boolean> = _dialogDeleteBoulder
+
+    fun dialogDeleteBoulder_close() {
+        _dialogDeleteBoulder.value = false
+    }
+    fun dialogDeleteBoulder_show() {
+        _dialogDeleteBoulder.value = true
     }
 
-    fun DialogDeleteBoulder_close() {
-        _DialogDeleteBoulder.value = false
-    }
 
-    fun DialogDeleteBoulder_show() {
-        _DialogDeleteBoulder.value = true
-    }
-
+    /**********************************************/
     fun onBoulder_Delete(realtime: RealtimeManager, boulder: BoulderModel) {
         realtime.deleteBoulder(boulder.key ?: "")
-        _DialogDeleteBoulder.value = false
+        _dialogDeleteBoulder.value = false
     }
 
     //En la card del item
@@ -162,7 +165,7 @@ class HomeViewModel: ViewModel() {
         fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
             realtime.addBoulder(boulder)
             _noteInput.value = ""
-            _DialogAddBoulder.value = false
+            _dialogAddBoulder.value = false
         }
 
 
@@ -173,9 +176,7 @@ class HomeViewModel: ViewModel() {
           _DialogAddBoulder.value = false
       }*/
 
-        /* Borrar boulder */
-        private val _DialogDeleteBoulder = MutableLiveData<Boolean>()
-        val DialogDeleteBoulder: LiveData<Boolean> = _DialogDeleteBoulder
+
     }
 
 
