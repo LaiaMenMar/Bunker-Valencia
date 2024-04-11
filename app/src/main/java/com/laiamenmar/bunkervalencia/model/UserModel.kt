@@ -1,20 +1,20 @@
 package com.laiamenmar.bunkervalencia.model
 
 data class UserModel(
-    val id: String?,
-    val userId: String,
-    val displayName: String,
-    val avatarUrl: String,
-    val isRouterSetter: Boolean
+    val user_id: String,
+    val display_name: String,
+    val email: String,
+    val urlPhoto: String?,
+    val router_setter: Boolean = false
 ) {
-    fun toMap(): MutableMap<String, Any> {
+    fun toMap(): MutableMap<String, Any?> {
         return mutableMapOf(
-            "user_id" to this.userId,
-            "display_name" to this.displayName,
-            "avatar_Url" to this.avatarUrl,
-            "router_setter" to this.isRouterSetter
+            "user_id" to this.user_id,
+            "display_name" to this.display_name,
+            "email" to this.email,
+            "urlPhoto" to this.urlPhoto,
+            "router_setter" to this.router_setter
         )
 
     }
-
 }

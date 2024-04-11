@@ -8,8 +8,10 @@ data class BoulderModel(
     val wall_id: String,
     val grade: String,
     val active: Boolean,
-    val color: String = ""
-    //repeticiones,
+    val color: String = "",
+    val likes: Int = 0,
+    val ascents: Int = 0,
+    val name_routeSeter: String = ""
    // var selected: () -> Unit = false //check de la card
 
 ){

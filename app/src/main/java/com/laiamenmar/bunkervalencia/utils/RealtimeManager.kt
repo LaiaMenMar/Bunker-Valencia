@@ -12,44 +12,60 @@ import com.laiamenmar.bunkervalencia.model.UserModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class RealtimeManager (context: Context) {
 
     private val usersReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("users")
     private val boulderReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("boulders")
 
-    fun createUser(displayName: String?, userId: String?) {
-   // val user = mutableMapOf<String, Any>()
-    //user["user_id"] = userId.toString()
-    //user["display_name"] = displayName.toString()
-       val user = UserModel(id = null,
-          userId = userId.toString(),
-          displayName = displayName.toString(),
-          avatarUrl = "",
-           isRouterSetter= false).toMap()
+    suspend fun createUser(userId: String, displayName: String?, email: String?, urlPhoto: String?) {
+        val userSnapshot = usersReference.child(userId).get().await()
+        if (!userSnapshot.exists()) {
+            val user = UserModel(
+                user_id = userId,
+                display_name = displayName.toString(),
+                email = email.toString(),
+                urlPhoto = urlPhoto.toString()
+                ).toMap()
 
-        usersReference.child(userId.toString()).setValue(user)
-            .addOnSuccessListener {
-                Log.d("RealtimeManager", "Usuario agregado con éxito a la base de datos")
+            usersReference.child(userId).setValue(user)
+                .addOnSuccessListener {
+                    Log.d("RealtimeManager", "Usuario agregado con éxito a la base de datos")
+                }
+                .addOnFailureListener { e ->
+                    // Manejar el fallo de la operación, si es necesario
+                    Log.e("RealtimeManager", "Error al agregar usuario a la base de datos", e)
+                }
+        }
+    }
+
+    suspend fun getUserNameById(userId: String): String? {
+        return try {
+            val userSnapshot = usersReference.child(userId.toString()).get().await()
+            if (userSnapshot.exists()) {
+                userSnapshot.child("display_name").value.toString()
+            } else {
+                null // Si el usuario no existe, devuelve null
             }
-            .addOnFailureListener { e ->
-                // Manejar el fallo de la operación, si es necesario
-                Log.e("RealtimeManager", "Error al agregar usuario a la base de datos", e)
-            }
+        } catch (e: Exception) {
+            // Manejar cualquier excepción que pueda ocurrir durante la consulta
+            Log.e("RealtimeManager", "Error al obtener el nombre del equipador al añadir el bloque", e)
+            null
+        }
     }
 
 
     /* Boulder metodos*/
   // fun addBoulder(boulder: LiveData<BoulderModel>) {
-    fun addBoulder(boulder: BoulderModel) {
+    suspend fun addBoulder(boulder: BoulderModel) {
+        val name = getUserNameById(boulder.uid_routeSeter)
+        val boulderWithName = name?.let { boulder.copy(name_routeSeter = it) }
         val key = boulderReference.push().key //crea la clave
         if (key != null) {
-            boulderReference.child(key).setValue(boulder)
+            boulderReference.child(key).setValue(boulderWithName)
         }
     }
-
-
-
     fun deleteBoulder(boulderKey: String) {
         boulderReference.child(boulderKey).removeValue()
     }

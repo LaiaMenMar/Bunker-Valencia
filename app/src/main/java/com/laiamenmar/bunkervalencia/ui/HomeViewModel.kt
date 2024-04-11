@@ -1,5 +1,6 @@
 package com.laiamenmar.bunkervalencia.ui
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
@@ -7,13 +8,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.laiamenmar.bunkervalencia.model.BoulderModel
+import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.theme.*
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel (): ViewModel() {
+ //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
+    private val _currentUser = MutableLiveData<UserModel>()
+    val currentUser: LiveData<UserModel> = _currentUser
+
+    // Función para actualizar el usuario actual
+    fun setCurrentUser(user: UserModel) {
+        _currentUser.value = user
+    }
+
     /* Géstion de los Dialog */
 
     /* Botón cerrar app */
@@ -28,7 +39,7 @@ class HomeViewModel: ViewModel() {
         _dialogCloseApp.value = false
     }
 
-    /* ScreenBoulders*/
+    /**** ScreenBoulders *****/
     /* Dialogo para añadir boulder */
     private val _dialogAddBoulder = MutableLiveData<Boolean>()
     val dialogAddBoulder: LiveData<Boolean> = _dialogAddBoulder
@@ -125,6 +136,13 @@ class HomeViewModel: ViewModel() {
             )
         }
 
+    suspend fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
+        realtime.addBoulder(boulder)
+        _noteInput.value = ""
+        _dialogAddBoulder.value = false
+    }
+
+
 
     fun getColorForGrade(grade: String): String {
         return when (grade) {
@@ -162,11 +180,6 @@ class HomeViewModel: ViewModel() {
         }
     }
 
-        fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
-            realtime.addBoulder(boulder)
-            _noteInput.value = ""
-            _dialogAddBoulder.value = false
-        }
 
 
 

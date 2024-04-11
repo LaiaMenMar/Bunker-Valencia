@@ -87,6 +87,7 @@ class LoginViewModel:ViewModel() {
                     ).show()
                 }
 
+                else -> {}
             }
 
         } else {
@@ -102,7 +103,7 @@ class LoginViewModel:ViewModel() {
         navigation: NavController
     ) {
         if (email.isNotEmpty() && password.isNotEmpty()) {
-            when (val result = auth.createUserWithEmailandPassword(email, password)) {
+            when (val result = auth.createUserWithEmailAndPassword(email, password)) {
                 is AuthRes.Success -> {
                     analytics.logButtonClicked(FirebaseAnalytics.Event.SIGN_UP)
                     Toast.makeText(context, "Registro existoso", Toast.LENGTH_SHORT).show()
@@ -116,6 +117,7 @@ class LoginViewModel:ViewModel() {
                         .show()
                 }
 
+                else -> {}
             }
 
         } else {
@@ -142,6 +144,8 @@ class LoginViewModel:ViewModel() {
                 Toast.makeText(context, "Error al enviar el correo", Toast.LENGTH_SHORT)
                     .show()
             }
+
+            else -> {}
         }
     }
 
@@ -164,6 +168,8 @@ class LoginViewModel:ViewModel() {
             is AuthRes.Error -> {
                 analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
             }
+
+            else -> {}
         }
     }
 
@@ -174,11 +180,15 @@ class LoginViewModel:ViewModel() {
                                  navigation: NavController,
                                  result: ActivityResult,) {
         val result = auth.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))
+
         when (result) {
             is AuthRes.Success -> {
                 val credential = GoogleAuthProvider.getCredential(result?.data?.idToken, null)
                 val fireUser = auth.signInWithGoogleCredential(credential)
+
+
                 if (fireUser != null) {
+
                     Toast.makeText(context, "Bienvenidx", Toast.LENGTH_SHORT).show()
                     navigation.navigate(AppScreens.HomeScreen.route) {
                         popUpTo(AppScreens.LoginScreen.route) { inclusive = true }

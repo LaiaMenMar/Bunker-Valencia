@@ -49,23 +49,20 @@ sealed class AuthRes<out T> {
         }
     }
 
-    suspend fun createUserWithEmailandPassword(
+    suspend fun createUserWithEmailAndPassword(
         email: String,
         password: String
     ): AuthRes<FirebaseUser?> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
 
-            val userId = result.user?.uid
-            val displayName = result.user?.email?.split("@")?.get(0)
-            realtimeManager.createUser(displayName, userId.toString())
+            if (result != null && result.user != null) {
+                val userId = result.user?.uid
+                val displayName = result.user?.email?.split("@")?.get(0)
 
+                realtimeManager.createUser(userId.toString(), displayName, result.user?.email.toString(), result.user?.photoUrl.toString())
 
-           // if (userId != null) {
-             //   val user = UserModel(userId, name) // Suponiendo que UserModel es tu modelo de datos para los usuarios
-                // Agrega el usuario a la colección de usuarios en Firebase
-               // addUser(user)
-            //}
+            }
 
             AuthRes.Success(result.user ?: throw Exception("Error al iniciar sesión"))
         } catch (e: Exception) {
@@ -118,6 +115,9 @@ sealed class AuthRes<out T> {
         return try {
             val firebaseUser = auth.signInWithCredential(credential).await()
             firebaseUser.user?.let {
+                val userId = it.uid
+                realtimeManager.createUser(userId.toString(), it.displayName, it.email, it.photoUrl.toString())
+
                 AuthRes.Success(it)
             } ?: throw Exception("Sign in with Google failed.")
         } catch (e: Exception) {
@@ -129,8 +129,6 @@ sealed class AuthRes<out T> {
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
     }
-
-
 
 }
 

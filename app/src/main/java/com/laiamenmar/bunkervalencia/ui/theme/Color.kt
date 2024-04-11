@@ -1,12 +1,13 @@
 package com.laiamenmar.bunkervalencia.ui.theme
 import androidx.compose.ui.graphics.Color
 
-val difficulty_1 = Color(0xFFFFFFFF)
-val difficulty_2 = Color(0xFF006004)
-val difficulty_3 = Color(0xFFFBE100)
-val difficulty_4 = Color(0xFFF63B00)
-val difficulty_5 = Color(0xFFFB0303)
-val difficulty_6 = Color(0xFF000000)
+val difficulty_1 = Color(0xFFFCFCFC)
+val difficulty_2 = Color(0xFF4CAF50)
+val difficulty_3 = Color(0xFFFFD54F)
+val difficulty_4 = Color(0xFFFF8A65)
+val difficulty_5 = Color(0xFFFF5252)
+val difficulty_6 = Color(0xFF4B4A4A)
+
 
 val md_theme_light_primary = Color(0xFF006C48)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

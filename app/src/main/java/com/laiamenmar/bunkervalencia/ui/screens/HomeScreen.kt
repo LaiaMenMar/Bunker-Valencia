@@ -1,5 +1,6 @@
 package com.laiamenmar.bunkervalencia.ui.screens
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -51,8 +52,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.firebase.auth.FirebaseUser
-import com.laiamenmar.bunkervalencia.R
+import com.google.firebase.auth.GoogleAuthProvider
+import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.screens.home.BouldersScreen
@@ -60,9 +61,11 @@ import com.laiamenmar.bunkervalencia.ui.screens.home.RoutesScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
+import com.laiamenmar.bunkervalencia.R
 
 //private lateinit var mFirebaseRemoteConfig: FirebaseRemoteConfig
-private var welcomeMessage by mutableStateOf("Bienvenidx")
+private var welcomeMessage by mutableStateOf("Hola! ")
+
 //private var isButtonVisible by mutableStateOf(true)
 
 @Composable
@@ -75,16 +78,18 @@ fun HomeScreen(
 ) {
     analytics.logScreenView(screenName = AppScreens.HomeScreen.route)
 
+
+
     /*Este nav Contorler es para pasar de la screen de rutas a la scrren de boulder*/
     val navController = rememberNavController()
 
     val dialogCloseApp: Boolean by homeViewModel.dialogCloseApp.observeAsState(false)
+
+
 //    initRemoteConfig()
     //  val context = LocalContext.current
 
     val user = auth.getCurrentUser()
-
-
     val onLogoutConfirmed: () -> Unit = {
         auth.signOut()
         navigation.navigate(AppScreens.LoginScreen.route) {
@@ -94,9 +99,26 @@ fun HomeScreen(
         }
     }
 
+    if (user != null) {
+        val displayName = when {
+            user.isAnonymous -> ""
+            user.providerData.any { it.providerId == GoogleAuthProvider.PROVIDER_ID } -> user.displayName
+            else -> user.email?.split("@")?.get(0) ?: ""}
+
+        val email = when {
+            user.isAnonymous -> "Anónimo"
+            else -> user.email.toString()}
+
+        homeViewModel.setCurrentUser(UserModel(
+            user_id = user.uid,
+            display_name = displayName.toString(),
+            email = email,
+            urlPhoto = user.photoUrl.toString()))
+    }
+
     Scaffold(
         topBar = {
-            TopBarWelcome(user = user, homeViewModel = homeViewModel)
+            TopBarWelcome(homeViewModel = homeViewModel)
         },
 
         bottomBar = {
@@ -126,17 +148,18 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarWelcome(user: FirebaseUser?, homeViewModel: HomeViewModel) {
+fun TopBarWelcome(homeViewModel: HomeViewModel) {
+    val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     TopAppBar(
         title = {
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (user?.photoUrl != null) {
+                if (currentUser != null   && currentUser?.urlPhoto.toString() != "null") {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(user?.photoUrl)
+                            .data(currentUser?.urlPhoto)
                             .crossfade(true)
                             .build(),
                         contentDescription = "Imagen",
@@ -148,7 +171,7 @@ fun TopBarWelcome(user: FirebaseUser?, homeViewModel: HomeViewModel) {
                     )
 
                 } else {
-                    Image(
+                   Image(
                         painter = painterResource(R.drawable.profile),
                         contentDescription = "Foto de perfil por defecto",
                         modifier = Modifier
@@ -162,13 +185,13 @@ fun TopBarWelcome(user: FirebaseUser?, homeViewModel: HomeViewModel) {
 
                 Column {
                     Text(
-                        text = if (!user?.displayName.isNullOrEmpty()) welcomeMessage + user?.displayName else welcomeMessage,
-                        fontSize = 20.sp,
+                       text = if (!currentUser?.display_name.isNullOrEmpty()) welcomeMessage + currentUser?.display_name else welcomeMessage,
+                       fontSize = 20.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (!user?.email.isNullOrEmpty()) "${user?.email}" else "Anónimo",
+                        text = if (currentUser?.email.toString() != "null") "${currentUser?.email}" else "Anónimo",
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -192,7 +215,7 @@ fun TopBarWelcome(user: FirebaseUser?, homeViewModel: HomeViewModel) {
                 onClick = {
                 }
             ) {
-                Icon(Icons.Filled.Search, contentDescription = "Buscar")
+                Icon(Icons.Filled.Person, contentDescription = "Perfil")
             }
             IconButton(
                 onClick = {
