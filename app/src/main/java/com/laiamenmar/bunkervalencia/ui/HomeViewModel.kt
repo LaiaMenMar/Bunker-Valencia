@@ -2,7 +2,6 @@ package com.laiamenmar.bunkervalencia.ui
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,22 +49,25 @@ class HomeViewModel (): ViewModel() {
         _dialogAddBoulder.value = true
     }
 
-    /* Dialogo para Borrar boulder */
-    private val _dialogDeleteBoulder = MutableLiveData<Boolean>()
-    val dialogDeleteBoulder: LiveData<Boolean> = _dialogDeleteBoulder
+    /* Dialogo para añadir boulder */
+    private val _dialogUpdateBoulder = MutableLiveData<Boolean>()
+    val dialogUpdateBoulder: LiveData<Boolean> = _dialogUpdateBoulder
+    fun dialogUpdateBoulder_close() {
+        _dialogUpdateBoulder.value = false
+    }
+    fun dialogUpdateBoulder_show() {
+        _dialogUpdateBoulder.value = true
+    }
 
-    fun dialogDeleteBoulder_close() {
-        _dialogDeleteBoulder.value = false
-    }
-    fun dialogDeleteBoulder_show() {
-        _dialogDeleteBoulder.value = true
-    }
 
 
     /**********************************************/
-    fun onBoulder_Delete(realtime: RealtimeManager, boulder: BoulderModel) {
-        realtime.deleteBoulder(boulder.key ?: "")
-        _dialogDeleteBoulder.value = false
+    suspend fun onBoulder_Delete(realtime: RealtimeManager, key: String?) {
+        Log.d(
+            "laia",
+            "key ${key}"
+        )
+        realtime.deleteBoulder(key ?: "")
     }
 
     //En la card del item
@@ -88,6 +90,24 @@ class HomeViewModel (): ViewModel() {
 
     private val _activeInput = MutableLiveData<Boolean>()
     val activeInput: LiveData<Boolean> = _activeInput
+
+    /***NO LO ENTIENDO****/
+
+    /* Parámetros del Objeto boulder actualizado*/
+    private val _noteInput1 = MutableLiveData<String>()
+    val noteInput1: LiveData<String> = _noteInput1
+
+    private val _wallInput1 = MutableLiveData<String>()
+    val wallInput1: LiveData<String> = _wallInput1
+
+    private val _gradeInput1 = MutableLiveData<String>()
+    val gradeInput1: LiveData<String> = _gradeInput1
+
+    private val _gradeColor1 = MutableLiveData<String>()
+    val gradeColor1: LiveData<String> = _gradeColor1
+
+    private val _activeInput1 = MutableLiveData<Boolean>()
+    val activeInput1: LiveData<Boolean> = _activeInput1
 
 
 
@@ -142,33 +162,30 @@ class HomeViewModel (): ViewModel() {
         }
 
     suspend fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
-        Log.d(
-            "laia",
-            "Boulder ${boulder.grade}, passwordInput=${boulder.wall_id}"
-        )
         realtime.addBoulder(boulder)
         _noteInput.value = ""
         _wallInput.value = "Muro 35"
         _activeInput.value = true
         _gradeInput.value = "4a"
 
-        Log.d(
-            "laia",
-            "Boulder ${_gradeInput.value}"
-        )
-
         _dialogAddBoulder.value = false
-        Log.d(
-            "laia",
-            "Boulder ${_dialogAddBoulder.value}"
-        )
     }
 
-    fun getBoulder (boulder: BoulderModel){
-        _noteInput.value = boulder.note
-        _wallInput.value = boulder.wall_id
-        _activeInput.value = boulder.active
-        _gradeInput.value = boulder.grade
+    fun onBoulder_Update() {
+    //    realtime.addBoulder(boulder)
+     //   _noteInput.value = ""
+     //   _wallInput.value = "Muro 35"
+    //    _activeInput.value = true
+     //   _gradeInput.value = "4a"
+
+        _dialogUpdateBoulder.value = false
+    }
+
+   fun getBoulder (boulder: BoulderModel){
+        _noteInput1.value = boulder.note
+        _wallInput1.value = boulder.wall_id
+        _activeInput1.value = boulder.active
+        _gradeInput1.value = boulder.grade
     }
 
 
@@ -183,40 +200,6 @@ class HomeViewModel (): ViewModel() {
             else -> "Color no definido"
         }
     }
-
-
-    /*
-    fun getColorForPosition(position: Int): Color {
-        return when (position) {
-            in 0..5 -> "dificultad_1" // 4a a 5c
-            in 6..11 -> "dificultad_2" // 6a a 6c+
-            in 12..17 -> "dificultad_3" // 7a a 7c+
-            in 18..21 -> "dificultad_4" // 8a a 8b+
-            in 22..23 -> "dificultad_5" // 8c y 8c+
-            else -> "Color no definido" // Manejo de casos no definidos
-        }
-    }
-*/
-    fun getColorFromString(colorName: String): Color {
-        return when (colorName.lowercase()) {
-            "blanco" -> Color.White
-            "verde" -> Color.Green
-            "naranja" -> Color(0xFFF44336)
-            "morado" -> Color(0xFF673AB7)
-            "negro" -> Color.Black
-            else -> Color.Gray // Color por defecto en caso de que el nombre no sea reconocido
-        }
-    }
-
-
-
-
-        /*  fun addBoulderParams(note: String, uid: String, grade: String, realtime: RealtimeManager) {
-          val newBoulder = BoulderModel(note = name, uid_routeSeter = uid)
-          realtime.addBoulder(newBoulder)
-          _DialogAddBoulder.value = false
-      }*/
-
 
     }
 

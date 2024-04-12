@@ -66,7 +66,7 @@ class RealtimeManager (context: Context) {
             boulderReference.child(key).setValue(boulderWithName)
         }
     }
-    fun deleteBoulder(boulderKey: String) {
+    suspend fun deleteBoulder(boulderKey: String) {
         boulderReference.child(boulderKey).removeValue()
     }
 
