@@ -1,6 +1,5 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,8 +21,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -72,9 +69,9 @@ fun BouldersScreen(
     authManager: AuthManager,
     homeViewModel: HomeViewModel,
 ) {
-
     val scope = rememberCoroutineScope()
-    val boulder: BoulderModel? by homeViewModel.boulder.observeAsState()
+    val boulderAdd: BoulderModel? by homeViewModel.boulder.observeAsState()
+   // val boulderSelected: BoulderModel? by homeViewModel.boulderSelected.observeAsState()
 
     // estado de dialogo para añadir bloque
     val dialogAddBoulder: Boolean by homeViewModel.dialogAddBoulder.observeAsState(false)
@@ -90,16 +87,19 @@ fun BouldersScreen(
             .padding(12.dp)
     ) {
 
-       BoulderList(dialogDeleteBoulder, homeViewModel, realtime, scope)
+       BoulderList(dialogDeleteBoulder, homeViewModel, realtime, scope, authManager)
 
        AddBoulderDialog(
             dialogAddBoulder = dialogAddBoulder,
             onDismiss = { homeViewModel.dialogAddBoulder_close() },
             onAdd = { scope.launch {
-                boulder?.let { homeViewModel.onBoulder_Add(realtime, it) } } },
+                boulderAdd?.let { homeViewModel.onBoulder_Add(realtime, it) } } },
             authManager = authManager,
             homeViewModel = homeViewModel
         )
+
+
+
 
         FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
     }
@@ -190,7 +190,8 @@ fun AddBoulderDialog(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 Button(
-                    onClick = { onAdd() },
+                    onClick = { onAdd()
+                               dialogBackgroundColor = difficulty_1},
                     Modifier.fillMaxWidth()
                 ) {
                     Text(text = "Añadir", fontSize = 16.sp)
@@ -201,11 +202,112 @@ fun AddBoulderDialog(
 }
 
 @Composable
+fun UpdateBoulderDialog(
+    dialogUpdateBoulder: Boolean,
+    onUpdate: () -> Unit,
+    authManager: AuthManager,
+    homeViewModel: HomeViewModel,
+    boulder: BoulderModel
+) {
+
+    var user = authManager.getCurrentUser()
+    val userId = user?.uid
+
+    //esto no modifica los valores
+    val wall: String by homeViewModel.wallInput.observeAsState(initial = boulder.wall_id)
+    val grade: String by homeViewModel.gradeInput.observeAsState(initial = boulder.grade)
+    val active: Boolean by homeViewModel.activeInput.observeAsState(initial = boulder.active)
+    val noteRouteSeter: String by homeViewModel.noteInput.observeAsState(initial = boulder.name_routeSeter)
+
+    homeViewModel.getBoulder(boulder)
+
+    var sliderPosition by remember { mutableStateOf(1f) }
+    var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
+
+
+    if (dialogUpdateBoulder) {
+        Dialog(onDismissRequest = {}) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(dialogBackgroundColor)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    TitleDialog("Bloque", Modifier.weight(1f))
+                    Activation_Switch(
+                        active
+                    ) {
+                        homeViewModel.onBoulderChanged(
+                            noteRouteSeter,
+                            wall,
+                            it,
+                            grade,
+                            userId.toString()
+                        )
+                    }
+                }
+                Walls_DropDownMenu(
+                    wall
+                ) {
+                    homeViewModel.onBoulderChanged(
+                        noteRouteSeter,
+                        it,
+                        active,
+                        grade,
+                        userId.toString()
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                DifficultySlider(
+                    grade,
+                    onValueChanged = { homeViewModel.onBoulderChanged(
+                        noteRouteSeter,
+                        wall,
+                        active,
+                        it,
+                        userId.toString()
+                    )},
+
+                    onSliderValueChanged = { sliderValue ->
+                        sliderPosition = sliderValue
+                        dialogBackgroundColor = getColorForPosition(Constants_Climb.routeGrades[sliderValue.toInt()])
+                    }
+                )
+
+                NoteTextField(
+                    noteRouteSeter
+                ) { homeViewModel.onBoulderChanged(it, wall, active, grade, userId.toString()) }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Button(
+                    onClick = { onUpdate()
+                        dialogBackgroundColor = difficulty_1},
+                    Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Actualizar", fontSize = 16.sp)
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
 fun BoulderList(
     dialogDeleteBoulder: Boolean,
     homeViewModel: HomeViewModel,
     realtime: RealtimeManager,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    authManager: AuthManager
 ) {
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
     //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
@@ -222,7 +324,8 @@ fun BoulderList(
                         realtime = realtime,
                         homeViewModel = homeViewModel,
                         boulder = boulder,
-                        scope = scope
+                        scope = scope,
+                        authManager = authManager
                     )
                 }
             }
@@ -257,13 +360,23 @@ fun ItemBoulder(
     realtime: RealtimeManager,
     homeViewModel: HomeViewModel,
     boulder: BoulderModel,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    authManager: AuthManager
 ) {
+    var dialogUpdateBoulder by remember { mutableStateOf(false) }
 
     DeleteBoulderDialog(
        dialogDeleteBoulder = dialogDeleteBoulder,
         onDismiss = { homeViewModel.dialogDeleteBoulder_close() },
         onBoulderConfirmDelete = { scope.launch {  homeViewModel.onBoulder_Delete(realtime, boulder) }})
+
+    UpdateBoulderDialog(
+        dialogUpdateBoulder = dialogUpdateBoulder,
+        onUpdate = {  },
+        authManager = authManager,
+        homeViewModel = homeViewModel,
+        boulder = boulder
+    )
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -376,7 +489,9 @@ fun ItemBoulder(
             }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Icon(
-                    modifier = Modifier.size(24.dp).clickable {  },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { dialogUpdateBoulder = true},
                     imageVector = Icons.Default.Edit,
                     contentDescription = "edit",
                     tint = Color.Gray
