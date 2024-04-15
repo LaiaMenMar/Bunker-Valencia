@@ -138,25 +138,32 @@ class HomeViewModel (): ViewModel() {
             wall: String,
             active: Boolean,
             grade: String,
-            ui: String
         ) {
-        val color: String = getColorForGrade(grade)
             _noteInput.value = note
             _wallInput.value = wall
             _activeInput.value = active
             _gradeInput.value = grade
-
-            _gradeColor.value = color
-
-            _boulder.value = BoulderModel(
-                note = note,
-                uid_routeSeter = ui,
-                wall_id = wall,
-                grade = grade,
-                active = active,
-                color = color
-            )
         }
+
+    private fun createBoulder() {
+        val color: String = getColorForGrade(_gradeInput.value!!)
+        _gradeColor.value = color
+
+        _boulder.value = BoulderModel(
+            note = _noteInput.value.toString(),
+            uid_routeSeter = _currentUser.value!!.user_id,
+            wall_id = _wallInput.value.toString(),
+            grade =  _gradeInput.value.toString(),
+            active = _activeInput.value!!,
+            color = color
+        )
+    }
+
+    fun updateBoulder() {
+
+
+
+    }
 
     fun onBoulderUpdate(
         note: String,
@@ -187,8 +194,13 @@ class HomeViewModel (): ViewModel() {
     }
 
 
-    suspend fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
-        realtime.addBoulder(boulder)
+
+
+    suspend fun onBoulder_Add(realtime: RealtimeManager) {
+        Log.d("laia", "Boulder actualizado con éxito a la base de datos en el homeviewmopdel ${_boulder.value} ")
+        createBoulder()
+        realtime.addBoulder(_boulder.value!!)
+
 
         _noteInput.value = ""
         _wallInput.value = "Muro 35"

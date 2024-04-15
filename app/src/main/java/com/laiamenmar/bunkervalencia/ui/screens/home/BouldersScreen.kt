@@ -72,13 +72,9 @@ fun BouldersScreen(
     homeViewModel: HomeViewModel,
 ) {
     val scope = rememberCoroutineScope()
-    val boulderAdd: BoulderModel? by homeViewModel.boulder.observeAsState()
 
     // estado de dialogo para añadir bloque
     val dialogAddBoulder: Boolean by homeViewModel.dialogAddBoulder.observeAsState(false)
-
-    /* Obtienes la lista de contactos a traves de un flujo, deberia estar en el HomeViewModel*/
-    // val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
 
     Box(
         modifier = Modifier
@@ -93,12 +89,10 @@ fun BouldersScreen(
             dialogAddBoulder = dialogAddBoulder,
             onDismiss = { homeViewModel.dialogAddBoulder_close() },
             onAdd = {
-
                 scope.launch {
-                    boulderAdd?.let { homeViewModel.onBoulder_Add(realtime, it) }
+                  homeViewModel.onBoulder_Add(realtime)
                 }
             },
-            authManager = authManager,
             homeViewModel = homeViewModel
         )
 
@@ -111,12 +105,8 @@ fun AddBoulderDialog(
     dialogAddBoulder: Boolean,
     onDismiss: () -> Unit,
     onAdd: () -> Unit,
-    authManager: AuthManager,
     homeViewModel: HomeViewModel
 ) {
-
-    var user = authManager.getCurrentUser()
-    val userId = user?.uid
 
     val wall: String by homeViewModel.wallInput.observeAsState(initial = "Muro 35")
     val grade: String by homeViewModel.gradeInput.observeAsState(initial = "4a")
@@ -150,7 +140,6 @@ fun AddBoulderDialog(
                             wall,
                             it,
                             grade,
-                            userId.toString()
                         )
                     }
                 }
@@ -161,8 +150,7 @@ fun AddBoulderDialog(
                         noteRouteSeter,
                         it,
                         active,
-                        grade,
-                        userId.toString()
+                        grade
                     )
                 }
 
@@ -176,7 +164,6 @@ fun AddBoulderDialog(
                             wall,
                             active,
                             it,
-                            userId.toString()
                         )
                     },
 
@@ -189,7 +176,12 @@ fun AddBoulderDialog(
 
                 NoteTextField(
                     noteRouteSeter
-                ) { homeViewModel.onBoulderChanged(it, wall, active, grade, userId.toString()) }
+                ) { homeViewModel.onBoulderChanged(
+                    it,
+                    wall,
+                    active,
+                    grade,
+                    ) }
 
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -445,7 +437,7 @@ fun ItemBoulder(
                     Button(
                         onClick = {  },
                         modifier = Modifier
-                            .width(100.dp)
+                            .width(300.dp)
                             .height(56.dp)
                             .padding(horizontal = 16.dp),
                         colors = buttonColors

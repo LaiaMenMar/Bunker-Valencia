@@ -19,7 +19,6 @@ import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 class LoginViewModel:ViewModel() {
-//class LoginViewModel @Inject constructor() :ViewModel() {
     private val _emailInput = MutableStateFlow("")
     val emailInput: StateFlow<String> = _emailInput
 
@@ -188,7 +187,6 @@ class LoginViewModel:ViewModel() {
 
 
                 if (fireUser != null) {
-
                     Toast.makeText(context, "Bienvenidx", Toast.LENGTH_SHORT).show()
                     navigation.navigate(AppScreens.HomeScreen.route) {
                         popUpTo(AppScreens.LoginScreen.route) { inclusive = true }

@@ -61,7 +61,7 @@ class RealtimeManager (context: Context) {
     suspend fun addBoulder(boulder: BoulderModel) {
         val name = getUserNameById(boulder.uid_routeSeter)
         val boulderWithName = name?.let { boulder.copy(name_routeSeter = it) }
-        val key = boulderReference.push().key //crea la clave
+        val key = boulderReference.push().key
         if (key != null) {
             boulderReference.child(key).setValue(boulderWithName)
         }
