@@ -105,7 +105,7 @@ fun Walls_DropDownMenu(value: String, onValueChanged: (String) -> Unit) {
 }
 @Composable
 fun DifficultySlider(value: String, onValueChanged: (String) -> Unit, onSliderValueChanged: (Float) -> Unit) {
-    var sliderPosition by remember { mutableStateOf(1f) }
+    var sliderPosition by remember { mutableStateOf(0f) }
     val grades = Constants_Climb.routeGrades
 
     Text(text = "Grado: $value")

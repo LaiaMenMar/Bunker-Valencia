@@ -50,7 +50,7 @@ class RealtimeManager (context: Context) {
             }
         } catch (e: Exception) {
             // Manejar cualquier excepción que pueda ocurrir durante la consulta
-            Log.e("RealtimeManager", "Error al obtener el nombre del equipador al añadir el bloque", e)
+            Log.e("laia", "Error al obtener el nombre del equipador al añadir el bloque", e)
             null
         }
     }
@@ -70,11 +70,21 @@ class RealtimeManager (context: Context) {
         boulderReference.child(boulderKey).removeValue()
     }
 
-/*
-    fun updateContact(boulderKey: String, updatedBoulder: BoulderModel) {
-        databaseReference.child(boulderKey).setValue(updatedBoulder)
+    suspend fun updateBoulder(updatedBoulder: BoulderModel) {
+        Log.d("laia", "Hola Boulder actualizado con éxito a la base de datos ${updatedBoulder.grade} la key ${updatedBoulder.key} ")
+
+        updatedBoulder?.key?.let {
+            boulderReference.child(it).setValue(updatedBoulder)
+                .addOnSuccessListener {
+                    Log.d("laia", "succes? Boulder actualizado con éxito a la base de datos ${updatedBoulder.grade} la key ${updatedBoulder.key} ")
+                }
+                .addOnFailureListener { e ->
+                    // Manejar el fallo de la operación, si es necesario
+                    Log.e("laia", "Error al agregar actualizar el boulder a la base de datos", e)
+                }
+        }
     }
-*/
+
 
 
     /* Listado de boulders, flujo continuo de datos, producir, transformar y consumir de manera asincrona. */

@@ -49,18 +49,6 @@ class HomeViewModel (): ViewModel() {
         _dialogAddBoulder.value = true
     }
 
-    /* Dialogo para añadir boulder */
-    private val _dialogUpdateBoulder = MutableLiveData<Boolean>()
-    val dialogUpdateBoulder: LiveData<Boolean> = _dialogUpdateBoulder
-    fun dialogUpdateBoulder_close() {
-        _dialogUpdateBoulder.value = false
-    }
-    fun dialogUpdateBoulder_show() {
-        _dialogUpdateBoulder.value = true
-    }
-
-
-
     /**********************************************/
     suspend fun onBoulder_Delete(realtime: RealtimeManager, key: String?) {
         Log.d(
@@ -69,6 +57,13 @@ class HomeViewModel (): ViewModel() {
         )
         realtime.deleteBoulder(key ?: "")
     }
+
+    suspend fun onBoulder_Update(realtime: RealtimeManager, boulder: BoulderModel) {
+        realtime.updateBoulder(boulder)
+        Log.d("laia", "Boulder actualizado con éxito a la base de datos en el homeviewmopdel ${boulder.grade} ")
+
+    }
+
 
     //En la card del item
     fun onCheckCardSelected(boulderModel: BoulderModel) {
@@ -114,6 +109,9 @@ class HomeViewModel (): ViewModel() {
     private val _boulder = MutableLiveData<BoulderModel>()
     val boulder: LiveData<BoulderModel> = _boulder
 
+    private val _boulderUpdate = MutableLiveData<BoulderModel>()
+    val boulderUpdate: LiveData<BoulderModel> = _boulderUpdate
+
     private val _boulderSelected = MutableLiveData<BoulderModel>()
     val boulderSelected: LiveData<BoulderModel> = _boulderSelected
 
@@ -143,7 +141,6 @@ class HomeViewModel (): ViewModel() {
             ui: String
         ) {
         val color: String = getColorForGrade(grade)
-
             _noteInput.value = note
             _wallInput.value = wall
             _activeInput.value = active
@@ -161,8 +158,38 @@ class HomeViewModel (): ViewModel() {
             )
         }
 
+    fun onBoulderUpdate(
+        note: String,
+        wall: String,
+        active: Boolean,
+        grade: String,
+        ui: String,
+        boulderOld: BoulderModel
+    ) {
+        val color: String = getColorForGrade(grade)
+
+        _noteInput1.value = note
+        _wallInput1.value = wall
+        _activeInput1.value = active
+        _gradeInput1.value = grade
+
+        _gradeColor1.value = color
+
+        _boulderUpdate.value = BoulderModel(
+            key = boulderOld.key,
+            note = note,
+            uid_routeSeter = ui,
+            wall_id = wall,
+            grade = grade,
+            active = active,
+            color = color
+        )
+    }
+
+
     suspend fun onBoulder_Add(realtime: RealtimeManager, boulder: BoulderModel) {
         realtime.addBoulder(boulder)
+
         _noteInput.value = ""
         _wallInput.value = "Muro 35"
         _activeInput.value = true
@@ -171,22 +198,12 @@ class HomeViewModel (): ViewModel() {
         _dialogAddBoulder.value = false
     }
 
-    fun onBoulder_Update() {
-    //    realtime.addBoulder(boulder)
-     //   _noteInput.value = ""
-     //   _wallInput.value = "Muro 35"
-    //    _activeInput.value = true
-     //   _gradeInput.value = "4a"
-
-        _dialogUpdateBoulder.value = false
-    }
-
-   fun getBoulder (boulder: BoulderModel){
+       fun getBoulder (boulder: BoulderModel){
         _noteInput1.value = boulder.note
         _wallInput1.value = boulder.wall_id
         _activeInput1.value = boulder.active
         _gradeInput1.value = boulder.grade
-    }
+       }
 
 
     fun getColorForGrade(grade: String): String {

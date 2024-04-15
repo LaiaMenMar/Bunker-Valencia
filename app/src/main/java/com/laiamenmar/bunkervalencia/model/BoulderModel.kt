@@ -1,7 +1,7 @@
 package com.laiamenmar.bunkervalencia.model
 
 data class BoulderModel(
-    val key: String? = null,
+    var key: String? = null,
     val id: Long = System.currentTimeMillis(),
     val note: String,
     val uid_routeSeter: String = "",

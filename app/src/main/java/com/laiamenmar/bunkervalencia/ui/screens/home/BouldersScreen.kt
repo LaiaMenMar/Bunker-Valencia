@@ -1,5 +1,6 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -91,6 +93,7 @@ fun BouldersScreen(
             dialogAddBoulder = dialogAddBoulder,
             onDismiss = { homeViewModel.dialogAddBoulder_close() },
             onAdd = {
+
                 scope.launch {
                     boulderAdd?.let { homeViewModel.onBoulder_Add(realtime, it) }
                 }
@@ -115,13 +118,12 @@ fun AddBoulderDialog(
     var user = authManager.getCurrentUser()
     val userId = user?.uid
 
-
     val wall: String by homeViewModel.wallInput.observeAsState(initial = "Muro 35")
     val grade: String by homeViewModel.gradeInput.observeAsState(initial = "4a")
     val active: Boolean by homeViewModel.activeInput.observeAsState(initial = true)
     val noteRouteSeter: String by homeViewModel.noteInput.observeAsState(initial = "")
 
-    var sliderPosition by remember { mutableStateOf(1f) }
+    var sliderPosition by remember { mutableStateOf(0f) }
     var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
 
 
@@ -167,7 +169,7 @@ fun AddBoulderDialog(
                 Spacer(modifier = Modifier.size(8.dp))
 
                 DifficultySlider(
-                    grade,
+                    value = grade,
                     onValueChanged = {
                         homeViewModel.onBoulderChanged(
                             noteRouteSeter,
@@ -212,13 +214,13 @@ fun UpdateBoulderDialog(
     onUpdate: () -> Unit,
     authManager: AuthManager,
     homeViewModel: HomeViewModel,
-    boulder: BoulderModel
+    boulderOld: BoulderModel
 ) {
 
     var user = authManager.getCurrentUser()
     val userId = user?.uid
 
-    homeViewModel.getBoulder(boulder)
+    homeViewModel.getBoulder(boulderOld)
 
     //esto no modifica los valores
     val wall: String by homeViewModel.wallInput1.observeAsState(initial = "")
@@ -228,6 +230,7 @@ fun UpdateBoulderDialog(
 
     var sliderPosition by remember { mutableStateOf(1f) }
     var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
+
 
 
     if (dialogUpdateBoulder) {
@@ -248,24 +251,26 @@ fun UpdateBoulderDialog(
                     Activation_Switch(
                         active
                     ) {
-                        homeViewModel.onBoulderChanged(
+                        homeViewModel.onBoulderUpdate(
                             noteRouteSeter,
                             wall,
                             it,
                             grade,
-                            userId.toString()
+                            userId.toString(),
+                            boulderOld
                         )
                     }
                 }
                 Walls_DropDownMenu(
                     wall
                 ) {
-                    homeViewModel.onBoulderChanged(
+                    homeViewModel.onBoulderUpdate(
                         noteRouteSeter,
                         it,
                         active,
                         grade,
-                        userId.toString()
+                        userId.toString(),
+                        boulderOld
                     )
                 }
 
@@ -274,12 +279,13 @@ fun UpdateBoulderDialog(
                 DifficultySlider(
                     grade,
                     onValueChanged = {
-                        homeViewModel.onBoulderChanged(
+                        homeViewModel.onBoulderUpdate(
                             noteRouteSeter,
                             wall,
                             active,
                             it,
-                            userId.toString()
+                            userId.toString(),
+                            boulderOld
                         )
                     },
 
@@ -292,7 +298,7 @@ fun UpdateBoulderDialog(
 
                 NoteTextField(
                     noteRouteSeter
-                ) { homeViewModel.onBoulderChanged(it, wall, active, grade, userId.toString()) }
+                ) { homeViewModel.onBoulderUpdate(it, wall, active, grade, userId.toString(), boulderOld) }
 
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -368,6 +374,8 @@ fun ItemBoulder(
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
 
 
+    val boulderUpdate: BoulderModel? by homeViewModel.boulderUpdate.observeAsState()
+
     DeleteBoulderDialog(
         dialogDeleteBoulder = dialogDeleteBoulder,
         onDismiss = { dialogDeleteBoulder = false },
@@ -379,14 +387,15 @@ fun ItemBoulder(
         dialogUpdateBoulder = dialogUpdateBoulder,
         onDismiss = { dialogUpdateBoulder = false },
         onUpdate = {
+            Log.d("laia", "AAqui llega? ${boulderUpdate?.key} el anterior ${boulder.key}")
             scope.launch {
-                homeViewModel.onBoulder_Update()
+                boulderUpdate?.let { homeViewModel.onBoulder_Update(realtime, it) }
             }
               dialogUpdateBoulder = false
         },
         authManager = authManager,
         homeViewModel = homeViewModel,
-        boulder = boulder
+        boulderOld = boulder
     )
 
     Card(
@@ -434,9 +443,9 @@ fun ItemBoulder(
                         )
                     }
                     Button(
-                        onClick = { /* Manejar el evento del clic */ },
+                        onClick = {  },
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .width(100.dp)
                             .height(56.dp)
                             .padding(horizontal = 16.dp),
                         colors = buttonColors
