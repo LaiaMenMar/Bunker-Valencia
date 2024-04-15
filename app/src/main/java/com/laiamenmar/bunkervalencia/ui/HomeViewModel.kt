@@ -50,19 +50,7 @@ class HomeViewModel (): ViewModel() {
     }
 
     /**********************************************/
-    suspend fun onBoulder_Delete(realtime: RealtimeManager, key: String?) {
-        Log.d(
-            "laia",
-            "key ${key}"
-        )
-        realtime.deleteBoulder(key ?: "")
-    }
 
-    suspend fun onBoulder_Update(realtime: RealtimeManager, boulder: BoulderModel) {
-        realtime.updateBoulder(boulder)
-        Log.d("laia", "Boulder actualizado con éxito a la base de datos en el homeviewmopdel ${boulder.grade} ")
-
-    }
 
 
     //En la card del item
@@ -145,6 +133,36 @@ class HomeViewModel (): ViewModel() {
             _gradeInput.value = grade
         }
 
+    fun onBoulderChanged1(
+        note: String,
+        wall: String,
+        active: Boolean,
+        grade: String,
+    ) {
+        _noteInput1.value = note
+        _wallInput1.value = wall
+        _activeInput1.value = active
+        _gradeInput1.value = grade
+    }
+
+    fun getBoulder (boulder: BoulderModel){
+        Log.d("Laia", "Dentro del get  ${_wallInput.value } ${_gradeInput.value }")
+        _noteInput1.value = boulder.note
+        _wallInput1.value = boulder.wall_id
+        _activeInput1.value = boulder.active
+        _gradeInput1.value = boulder.grade
+    }
+
+    fun cleanBoulder() {
+        Log.d("Laia", "Estas en el clean  ${_wallInput.value } ${_gradeInput.value }")
+        _noteInput.value = ""
+        _wallInput.value = "Muro 35"
+        _activeInput.value = true
+        _gradeInput.value = "4a"
+        Log.d("Laia", "Estas en el clean al final ${_wallInput.value } ${_gradeInput.value }")
+    }
+
+
     private fun createBoulder() {
         val color: String = getColorForGrade(_gradeInput.value!!)
         _gradeColor.value = color
@@ -159,13 +177,26 @@ class HomeViewModel (): ViewModel() {
         )
     }
 
-    fun updateBoulder() {
+    private fun updateBoulder(boulderOld: BoulderModel) {
+        val color: String = getColorForGrade(_gradeInput1.value!!)
+        _gradeColor1.value = color
 
-
-
+        _boulderUpdate.value = BoulderModel(
+            key = boulderOld.key,
+            id = boulderOld.id,
+            note = _noteInput1.value.toString(),
+            uid_routeSeter = boulderOld.uid_routeSeter,
+            wall_id = _wallInput1.value.toString(),
+            grade =  _gradeInput1.value.toString(),
+            active = _activeInput1.value!!,
+            color = color,
+            name_routeSeter = boulderOld.name_routeSeter)
     }
 
-    fun onBoulderUpdate(
+
+
+
+ /*   fun onBoulderUpdate(
         note: String,
         wall: String,
         active: Boolean,
@@ -191,16 +222,15 @@ class HomeViewModel (): ViewModel() {
             active = active,
             color = color
         )
-    }
-
-
+    } */
 
 
     suspend fun onBoulder_Add(realtime: RealtimeManager) {
         Log.d("laia", "Boulder actualizado con éxito a la base de datos en el homeviewmopdel ${_boulder.value} ")
-        createBoulder()
-        realtime.addBoulder(_boulder.value!!)
 
+        createBoulder()
+
+        realtime.addBoulder(_boulder.value!!)
 
         _noteInput.value = ""
         _wallInput.value = "Muro 35"
@@ -210,12 +240,26 @@ class HomeViewModel (): ViewModel() {
         _dialogAddBoulder.value = false
     }
 
-       fun getBoulder (boulder: BoulderModel){
-        _noteInput1.value = boulder.note
-        _wallInput1.value = boulder.wall_id
-        _activeInput1.value = boulder.active
-        _gradeInput1.value = boulder.grade
-       }
+    suspend fun onBoulder_Delete(realtime: RealtimeManager, key: String?) {
+        Log.d(
+            "laia",
+            "key ${key}"
+        )
+        realtime.deleteBoulder(key ?: "")
+    }
+
+    suspend fun onBoulder_Update(realtime: RealtimeManager, boulderOld: BoulderModel) {
+        updateBoulder(boulderOld)
+        realtime.updateBoulder(_boulderUpdate.value!!)
+
+        
+
+      /*  _noteInput.value = ""
+        _wallInput.value = "Muro 35"
+        _activeInput.value = true
+        _gradeInput.value = "4a"*/
+    }
+
 
 
     fun getColorForGrade(grade: String): String {

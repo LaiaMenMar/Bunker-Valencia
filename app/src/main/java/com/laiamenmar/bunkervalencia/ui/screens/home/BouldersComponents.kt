@@ -108,6 +108,9 @@ fun DifficultySlider(value: String, onValueChanged: (String) -> Unit, onSliderVa
     var sliderPosition by remember { mutableStateOf(0f) }
     val grades = Constants_Climb.routeGrades
 
+    val initialGradeIndex = Constants_Climb.routeGrades.indexOf(value)
+    sliderPosition = initialGradeIndex.toFloat()
+
     Text(text = "Grado: $value")
     Spacer(modifier = Modifier.height(4.dp))
     Slider(
@@ -123,30 +126,6 @@ fun DifficultySlider(value: String, onValueChanged: (String) -> Unit, onSliderVa
         modifier = Modifier.fillMaxWidth()
     )
 }
-
-
-
-/*
-@Composable
-fun DifficultySlider(value: String, onValueChanged: (String) -> Unit) {
-    var sliderPosition by remember { mutableStateOf(6f)}
-    val grades = Constants_Climb.routeGrades
-
-        Text(text = "Grado: $value")
-        Spacer(modifier = Modifier.height(4.dp))
-        Slider(
-            value = sliderPosition,
-            onValueChange = {
-                sliderPosition = it
-              //  val newGrade = grades[it.toInt()]
-                onValueChanged(grades[it.toInt()])
-            },
-            valueRange = 0f..(grades.size - 1).toFloat(),
-            steps = grades.size - 1,
-            modifier = Modifier.fillMaxWidth()
-        )
-}*/
-
 
 @Composable
 fun NoteTextField(value: String, onValueChanged: (String) -> Unit) {

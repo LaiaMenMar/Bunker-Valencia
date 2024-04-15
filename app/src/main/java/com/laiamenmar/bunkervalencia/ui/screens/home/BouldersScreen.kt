@@ -29,7 +29,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -75,7 +74,7 @@ fun BouldersScreen(
 
     // estado de dialogo para añadir bloque
     val dialogAddBoulder: Boolean by homeViewModel.dialogAddBoulder.observeAsState(false)
-
+    //var dialogAddBoulder by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -90,11 +89,24 @@ fun BouldersScreen(
             onDismiss = { homeViewModel.dialogAddBoulder_close() },
             onAdd = {
                 scope.launch {
-                  homeViewModel.onBoulder_Add(realtime)
+                    homeViewModel.onBoulder_Add(realtime)
                 }
             },
             homeViewModel = homeViewModel
         )
+
+        /*    SubmitBoulderDialog(
+                dialogAddBoulder = dialogAddBoulder,
+                onDismiss = { homeViewModel.dialogAddBoulder_close() },
+                onSubmit = {
+                    scope.launch {
+                        homeViewModel.onBoulder_Add(realtime)
+                    }
+                },
+                homeViewModel = homeViewModel,
+                update = false,
+                boulderOld = BoulderModel()
+            )*/
 
         FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
     }
@@ -176,12 +188,14 @@ fun AddBoulderDialog(
 
                 NoteTextField(
                     noteRouteSeter
-                ) { homeViewModel.onBoulderChanged(
-                    it,
-                    wall,
-                    active,
-                    grade,
-                    ) }
+                ) {
+                    homeViewModel.onBoulderChanged(
+                        it,
+                        wall,
+                        active,
+                        grade,
+                    )
+                }
 
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -199,6 +213,226 @@ fun AddBoulderDialog(
     }
 }
 
+@Composable
+fun UpdateBoulderDialog(
+    dialogUpdateBoulder: Boolean,
+    onDismiss: () -> Unit,
+    onUpdate: () -> Unit,
+    homeViewModel: HomeViewModel,
+    boulderOld: BoulderModel
+) {
+
+    homeViewModel.getBoulder(boulderOld)
+
+    //esto no modifica los valores
+    val wall: String by homeViewModel.wallInput1.observeAsState(initial = "")
+    val grade: String by homeViewModel.gradeInput1.observeAsState(initial = "")
+    val active: Boolean by homeViewModel.activeInput1.observeAsState(initial = true)
+    val noteRouteSeter: String by homeViewModel.noteInput1.observeAsState(initial = "")
+
+    var sliderPosition by remember { mutableStateOf(0f) }
+    var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
+
+    dialogBackgroundColor = getColorlikeColor(boulderOld.color)
+
+
+    if (dialogUpdateBoulder) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(dialogBackgroundColor)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    TitleDialog("Bloque", Modifier.weight(1f))
+                    Activation_Switch(
+                        active
+                    ) {
+                        homeViewModel.onBoulderChanged1(
+                            noteRouteSeter,
+                            wall,
+                            it,
+                            grade,
+                        )
+                    }
+                }
+                Walls_DropDownMenu(
+                    wall
+                ) {
+
+                    homeViewModel.onBoulderChanged1(
+                        noteRouteSeter,
+                        it,
+                        active,
+                        grade,
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                DifficultySlider(
+                    grade,
+                    onValueChanged = {
+                        homeViewModel.onBoulderChanged1(
+                            noteRouteSeter,
+                            wall,
+                            active,
+                            it,
+                        )
+                    },
+
+                    onSliderValueChanged = { sliderValue ->
+                        sliderPosition = sliderValue
+                        dialogBackgroundColor =
+                            getColorForPosition(Constants_Climb.routeGrades[sliderValue.toInt()])
+                    }
+                )
+
+                NoteTextField(
+                    noteRouteSeter
+                ) { homeViewModel.onBoulderChanged1(it, wall, active, grade) }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Button(
+                    onClick = { onUpdate() },
+                    Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Actualizar", fontSize = 16.sp)
+                }
+            }
+        }
+    }
+}
+
+
+/*
+@Composable
+fun SubmitBoulderDialog(
+    dialogAddBoulder: Boolean,
+    onDismiss: () -> Unit,
+    onSubmit: () -> Unit,
+    homeViewModel: HomeViewModel,
+    update: Boolean,
+    boulderOld: BoulderModel
+) {
+    var sliderPosition by remember { mutableStateOf(0f) }
+    var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
+
+    homeViewModel.cleanBoulder()
+    Log.d("Laia", "ES nulo + ${boulderOld}")
+    Log.d("Laia", "ES update + ${update}")
+
+    if(update) {
+        Log.d("Laia", "Dentro Update")
+
+        Log.d("Laia", "Dentro del updateSlider1 + ${sliderPosition}")
+        homeViewModel.getBoulder(boulderOld)
+
+        val initialGradeIndex = Constants_Climb.routeGrades.indexOf(boulderOld.grade)
+
+        sliderPosition = initialGradeIndex.toFloat()
+        Log.d("Laia", "Slider2 + ${sliderPosition}")
+
+        dialogBackgroundColor = getColorlikeColor(boulderOld.color)
+
+    }
+
+    val wall: String by homeViewModel.wallInput.observeAsState(initial = "Muro 35")
+    val grade: String by homeViewModel.gradeInput.observeAsState(initial = "4a")
+    val active: Boolean by homeViewModel.activeInput.observeAsState(initial = true)
+    val noteRouteSeter: String by homeViewModel.noteInput.observeAsState(initial = "")
+
+    if (dialogAddBoulder) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(dialogBackgroundColor)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    TitleDialog("Bloque", Modifier.weight(1f))
+                    Activation_Switch(
+                        active
+                    ) {
+                        homeViewModel.onBoulderChanged(
+                            noteRouteSeter,
+                            wall,
+                            it,
+                            grade,
+                        )
+                    }
+                }
+                Walls_DropDownMenu(
+                    wall
+                ) {
+                    homeViewModel.onBoulderChanged(
+                        noteRouteSeter,
+                        it,
+                        active,
+                        grade
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                DifficultySlider(
+                    value = grade,
+                    onValueChanged = {
+                        homeViewModel.onBoulderChanged(
+                            noteRouteSeter,
+                            wall,
+                            active,
+                            it,
+                        )
+                    },
+
+                    onSliderValueChanged = { sliderValue ->
+                        sliderPosition = sliderValue
+                        dialogBackgroundColor =
+                            getColorForPosition(Constants_Climb.routeGrades[sliderValue.toInt()])
+                    }
+                )
+
+                NoteTextField(
+                    noteRouteSeter
+                ) { homeViewModel.onBoulderChanged(
+                    it,
+                    wall,
+                    active,
+                    grade,
+                ) }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Button(
+                    onClick = {
+                        onSubmit()
+                        dialogBackgroundColor = difficulty_1
+                    },
+                    Modifier.fillMaxWidth()
+                ) {
+                    if (update){
+                    Text(text = "Actualizar", fontSize = 16.sp)
+                } else { Text(text = "Añadir", fontSize = 16.sp)}
+                }
+            }
+        }
+    }
+}*/
+/*
 @Composable
 fun UpdateBoulderDialog(
     dialogUpdateBoulder: Boolean,
@@ -304,7 +538,7 @@ fun UpdateBoulderDialog(
         }
     }
 }
-
+*/
 
 @Composable
 fun BoulderList(
@@ -366,7 +600,7 @@ fun ItemBoulder(
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
 
 
-    val boulderUpdate: BoulderModel? by homeViewModel.boulderUpdate.observeAsState()
+    //val boulderUpdate: BoulderModel? by homeViewModel.boulderUpdate.observeAsState()
 
     DeleteBoulderDialog(
         dialogDeleteBoulder = dialogDeleteBoulder,
@@ -375,20 +609,31 @@ fun ItemBoulder(
             scope.launch { homeViewModel.onBoulder_Delete(realtime, boulder.key) }
             dialogDeleteBoulder = false
         })
+
+    /*   SubmitBoulderDialog (
+           dialogAddBoulder = dialogUpdateBoulder,
+           onDismiss = { dialogUpdateBoulder = false},
+           onSubmit = {
+               scope.launch {   homeViewModel.onBoulder_Update(realtime, boulder) }
+               dialogUpdateBoulder = false },
+           homeViewModel = homeViewModel,
+           update = true,
+           boulderOld = boulder
+       )*/
     UpdateBoulderDialog(
         dialogUpdateBoulder = dialogUpdateBoulder,
         onDismiss = { dialogUpdateBoulder = false },
         onUpdate = {
-            Log.d("laia", "AAqui llega? ${boulderUpdate?.key} el anterior ${boulder.key}")
             scope.launch {
-                boulderUpdate?.let { homeViewModel.onBoulder_Update(realtime, it) }
+                homeViewModel.onBoulder_Update(realtime, boulder)
             }
-              dialogUpdateBoulder = false
+            dialogUpdateBoulder = false
         },
-        authManager = authManager,
         homeViewModel = homeViewModel,
         boulderOld = boulder
     )
+
+
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -435,7 +680,7 @@ fun ItemBoulder(
                         )
                     }
                     Button(
-                        onClick = {  },
+                        onClick = { },
                         modifier = Modifier
                             .width(300.dp)
                             .height(56.dp)
