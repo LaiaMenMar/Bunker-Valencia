@@ -13,6 +13,9 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeViewModel (): ViewModel() {
  //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
@@ -252,7 +255,7 @@ class HomeViewModel (): ViewModel() {
         updateBoulder(boulderOld)
         realtime.updateBoulder(_boulderUpdate.value!!)
 
-        
+
 
       /*  _noteInput.value = ""
         _wallInput.value = "Muro 35"
@@ -274,6 +277,11 @@ class HomeViewModel (): ViewModel() {
         }
     }
 
+    fun get (timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        return format.format(date)
+    }
     }
 
 

@@ -89,7 +89,7 @@ class RealtimeManager (context: Context) {
 
     /* Listado de boulders, flujo continuo de datos, producir, transformar y consumir de manera asincrona. */
 
-    fun getBouldersFlow(): Flow<List<BoulderModel>> {
+ /*   fun getBouldersFlow(): Flow<List<BoulderModel>> {
         //en el ejemplo sólo se muestran los contactos del ususario logeado
        // val idFilter = authManager.getCurrentUser()?.uid
         val flow = callbackFlow {
@@ -100,7 +100,8 @@ class RealtimeManager (context: Context) {
                     val boulders = snapshot.children.mapNotNull {  snapshot ->
                         val boulder = snapshot.getValue(BoulderModel::class.java)
                         // para obtener la key del boulder
-                        snapshot.key?.let { boulder?.copy(key = it) }
+                        snapshot.key?.let {
+                            boulder?.copy(key = it) }
                     }
                     trySend(boulders).isSuccess
                   //  trySend(boulders.filter { it.uid == idFilter }).isSuccess
@@ -112,6 +113,32 @@ class RealtimeManager (context: Context) {
             awaitClose { boulderReference.removeEventListener(listener) }
         }
         return flow
-    }
+    }*/
 
+    fun getBouldersFlow(): Flow<List<BoulderModel>> {
+        val flow = callbackFlow {
+            val listener = boulderReference
+                .orderByChild("id")
+                .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val boulders = snapshot.children
+                        .mapNotNull { snapshot ->
+                            val boulder = snapshot.getValue(BoulderModel::class.java)
+                            snapshot.key?.let { key ->
+                                boulder?.copy(key = key)
+                            }
+                        }
+                        .sortedByDescending { it.id }
+                    trySend(boulders).isSuccess
+                   // trySend(boulders.filter { it.uid == idFilter }).isSuccess
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    close(error.toException())
+                }
+            })
+            awaitClose { boulderReference.removeEventListener(listener) }
+        }
+        return flow
+    }
 }

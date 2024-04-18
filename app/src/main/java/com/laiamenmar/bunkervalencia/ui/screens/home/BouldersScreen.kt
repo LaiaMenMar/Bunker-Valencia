@@ -62,6 +62,8 @@ import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @Composable()
@@ -432,113 +434,7 @@ fun SubmitBoulderDialog(
         }
     }
 }*/
-/*
-@Composable
-fun UpdateBoulderDialog(
-    dialogUpdateBoulder: Boolean,
-    onDismiss: () -> Unit,
-    onUpdate: () -> Unit,
-    authManager: AuthManager,
-    homeViewModel: HomeViewModel,
-    boulderOld: BoulderModel
-) {
 
-    var user = authManager.getCurrentUser()
-    val userId = user?.uid
-
-    homeViewModel.getBoulder(boulderOld)
-
-    //esto no modifica los valores
-    val wall: String by homeViewModel.wallInput1.observeAsState(initial = "")
-    val grade: String by homeViewModel.gradeInput1.observeAsState(initial = "")
-    val active: Boolean by homeViewModel.activeInput1.observeAsState(initial = true)
-    val noteRouteSeter: String by homeViewModel.noteInput1.observeAsState(initial = "")
-
-    var sliderPosition by remember { mutableStateOf(1f) }
-    var dialogBackgroundColor by remember { mutableStateOf(difficulty_1) }
-
-
-
-    if (dialogUpdateBoulder) {
-        Dialog(onDismissRequest = { onDismiss() }) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .background(dialogBackgroundColor)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    TitleDialog("Bloque", Modifier.weight(1f))
-                    Activation_Switch(
-                        active
-                    ) {
-                        homeViewModel.onBoulderUpdate(
-                            noteRouteSeter,
-                            wall,
-                            it,
-                            grade,
-                            userId.toString(),
-                            boulderOld
-                        )
-                    }
-                }
-                Walls_DropDownMenu(
-                    wall
-                ) {
-                    homeViewModel.onBoulderUpdate(
-                        noteRouteSeter,
-                        it,
-                        active,
-                        grade,
-                        userId.toString(),
-                        boulderOld
-                    )
-                }
-
-                Spacer(modifier = Modifier.size(8.dp))
-
-                DifficultySlider(
-                    grade,
-                    onValueChanged = {
-                        homeViewModel.onBoulderUpdate(
-                            noteRouteSeter,
-                            wall,
-                            active,
-                            it,
-                            userId.toString(),
-                            boulderOld
-                        )
-                    },
-
-                    onSliderValueChanged = { sliderValue ->
-                        sliderPosition = sliderValue
-                        dialogBackgroundColor =
-                            getColorForPosition(Constants_Climb.routeGrades[sliderValue.toInt()])
-                    }
-                )
-
-                NoteTextField(
-                    noteRouteSeter
-                ) { homeViewModel.onBoulderUpdate(it, wall, active, grade, userId.toString(), boulderOld) }
-
-                Spacer(modifier = Modifier.size(8.dp))
-
-                Button(
-                    onClick = { onUpdate() },
-                    Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "Actualizar", fontSize = 16.sp)
-                }
-            }
-        }
-    }
-}
-*/
 
 @Composable
 fun BoulderList(
@@ -550,9 +446,17 @@ fun BoulderList(
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
     //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
 
-    if (!bouldersListFlow.isNullOrEmpty()) {
+    var selectedWall by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf("") }
+
+    val filteredBoulders = bouldersListFlow.filter { boulder ->
+        (selectedWall.isBlank() || boulder.wall_id == selectedWall) &&
+         (selectedColor.isBlank() || boulder.color == selectedColor)
+    }
+
+    if (!filteredBoulders.isNullOrEmpty()) {
         LazyColumn {
-            bouldersListFlow.forEach { boulder ->
+            filteredBoulders.forEach { boulder ->
                 item {
                     ItemBoulder(
                         realtime = realtime,
@@ -599,6 +503,9 @@ fun ItemBoulder(
     var dialogUpdateBoulder by remember { mutableStateOf(false) }
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
 
+    val date = Date(boulder.id)
+    val sdf = SimpleDateFormat("dd/MM/yyyy")
+    val formattedDate = sdf.format(date)
 
     //val boulderUpdate: BoulderModel? by homeViewModel.boulderUpdate.observeAsState()
 
@@ -659,7 +566,7 @@ fun ItemBoulder(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Equipador ${boulder.name_routeSeter}",
+                        text = formattedDate,
                         fontWeight = FontWeight.Medium,
                         fontSize = 15.sp,
                         maxLines = 1,
