@@ -156,7 +156,7 @@ fun TopBarWelcome(homeViewModel: HomeViewModel) {
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (currentUser != null   && currentUser?.urlPhoto.toString() != "null") {
+                if (currentUser != null && currentUser?.urlPhoto.toString() != "null") {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(currentUser?.urlPhoto)

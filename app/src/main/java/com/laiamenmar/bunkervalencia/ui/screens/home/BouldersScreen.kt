@@ -1,12 +1,12 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -31,6 +34,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -58,6 +63,7 @@ import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_4
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_5
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_6
+import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_outlineVariant
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +86,7 @@ fun BouldersScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.DarkGray)
+            .background(color = Color.LightGray)
             .padding(12.dp)
     ) {
 
@@ -445,50 +451,99 @@ fun BoulderList(
 ) {
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
     //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
-
+   // val selectedWall by homeViewModel.selectedWall.collectAsState()
     var selectedWall by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf("") }
+    val allAvailableColors = listOf(
+        "difficulty_1",
+        "difficulty_2",
+        "difficulty_3",
+        "difficulty_4",
+        "difficulty_5",
+        "difficulty_6"
+    )
 
-    val filteredBoulders = bouldersListFlow.filter { boulder ->
-        (selectedWall.isBlank() || boulder.wall_id == selectedWall) &&
-         (selectedColor.isBlank() || boulder.color == selectedColor)
-    }
+    val allAvailableGrades = listOf(
+        "4c",
+        "5c",
+        "6b+",
+        "7a+",
+        "7c+",
+        "8c+"
+    )
+    var selectedColors by remember { mutableStateOf(allAvailableColors.toSet()) }
+    Column {
+        Walls_DropDownMenu(
+            value = selectedWall,
+            onValueChanged = { wall ->
+                selectedWall = wall
+            }
+        )
+        Row {
+            IconButton(
+                onClick = {  selectedWall = ""
+                             selectedColors = allAvailableColors.toSet()
+                },
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Clear Filter",
+                    tint = Color.Gray
+                )
+            }
 
-    if (!filteredBoulders.isNullOrEmpty()) {
-        LazyColumn {
-            filteredBoulders.forEach { boulder ->
-                item {
-                    ItemBoulder(
-                        realtime = realtime,
-                        homeViewModel = homeViewModel,
-                        boulder = boulder,
-                        scope = scope,
-                        authManager = authManager
-                    )
+            Spacer(modifier = Modifier.weight(1f))
+            ColorsChips(
+                selectedColors = selectedColors,
+                availableColors = allAvailableColors,
+                onColorSelected = { color ->
+                    selectedColors = selectedColors + color
+                }
+            ) { color ->
+                selectedColors = selectedColors - color
+            }
+
+        }
+
+        val filteredBoulders = bouldersListFlow.filter { boulder ->
+            (selectedWall.isBlank() || boulder.wall_id == selectedWall) && (boulder.color in selectedColors)
+        }
+
+        if (!filteredBoulders.isNullOrEmpty()) {
+            LazyColumn {
+                filteredBoulders.forEach { boulder ->
+                    item {
+                        ItemBoulder(
+                            realtime = realtime,
+                            homeViewModel = homeViewModel,
+                            boulder = boulder,
+                            scope = scope,
+                            authManager = authManager
+                        )
+                    }
                 }
             }
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = null,
-                modifier = Modifier.size(100.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "No se encontraron \n bloques",
-                fontSize = 18.sp, fontWeight = FontWeight.Thin, textAlign = TextAlign.Center
-            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No se encontraron \n bloques",
+                    fontSize = 18.sp, fontWeight = FontWeight.Thin, textAlign = TextAlign.Center
+                )
+            }
         }
     }
-
 }
 
 @Composable
@@ -547,7 +602,7 @@ fun ItemBoulder(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+        colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
         border = BorderStroke(2.dp, Color.Gray),
     ) {
         Column(
@@ -730,15 +785,95 @@ fun getColorForPosition(grade: String): Color {
     return when (grade) {
         "4a", "4b", "4c" -> difficulty_1
         "5a", "5b", "5c" -> difficulty_2
-        "6a", "6a+", "6b", "6b+" -> difficulty_3
-        "6c", "6c+", "7a", "7a+" -> difficulty_4
-        "7b", "7b+", "7c", "7c+" -> difficulty_5
+        "6a", "6a+", "6b", -> difficulty_3
+        "6b+","6c", "6c+", "7a" -> difficulty_4
+        "7a+","7b", "7b+", "7c", "7c+" -> difficulty_5
         "8a", "8a+", "8b", "8b+", "8c", "8c+" -> difficulty_6
         else -> Color.DarkGray
     }
 }
 
+fun getMaxGradeForColor(color: String): String {
+    return when (color) {
+        "difficulty_1" -> "4c"
+        "difficulty_2" -> "5c"
+        "difficulty_3" -> "6b"
+        "difficulty_4" -> "7a"
+        "difficulty_5" -> "7c+"
+        "difficulty_6" -> "8c+"
+        else -> "N/A"
+    }
+}
 
 
+@Composable
+fun ColorsChips(
+    selectedColors: Set<String>,
+    availableColors: List<String>,
+    onColorSelected: (String) -> Unit,
+    onColorDeselected: (String) -> Unit
+) {
+    LazyRow(
+        contentPadding = PaddingValues(vertical = 4.dp),
+        // horizontalArrangement = Arrangement.SpaceAround,
+       // modifier = Modifier.fillMaxWidth()
+    ) {
+        items(availableColors) { color ->
+            val isSelected = selectedColors.contains(color)
+            Chip(
+                backgroundColor = if (isSelected) getColorlikeColor(color) else Color.Gray,
+                gradeText = getMaxGradeForColor(color),
+                onClick = {
+                    if (isSelected) {
+                        onColorDeselected(color)
+                    } else {
+                        onColorSelected(color)
+                    }
+                },
+                modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp)
+            )
+        }
+    }
+}
 
 
+@Composable
+fun Chip(
+    backgroundColor: Color,
+    gradeText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color.Gray
+        ),
+        color = backgroundColor,
+        modifier = modifier
+    ) {
+        Text(
+            text = gradeText,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+        )
+    }
+    /* Box(
+         modifier = modifier
+             .background(
+                 color = backgroundColor,
+                 shape = CircleShape
+             )
+             .clickable(onClick = onClick)
+             .padding(horizontal = 8.dp, vertical = 8.dp)
+     ) {
+         Text(text = gradeText,
+             fontSize = 18.sp,
+             fontWeight = FontWeight.Bold,)
+     }*/
+
+
+}

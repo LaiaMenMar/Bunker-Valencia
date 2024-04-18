@@ -12,13 +12,15 @@ import com.laiamenmar.bunkervalencia.ui.theme.*
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class HomeViewModel (): ViewModel() {
- //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
+
+    //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
     private val _currentUser = MutableLiveData<UserModel>()
     val currentUser: LiveData<UserModel> = _currentUser
 
@@ -94,8 +96,6 @@ class HomeViewModel (): ViewModel() {
 
     private val _activeInput1 = MutableLiveData<Boolean>()
     val activeInput1: LiveData<Boolean> = _activeInput1
-
-
 
     private val _boulder = MutableLiveData<BoulderModel>()
     val boulder: LiveData<BoulderModel> = _boulder
@@ -282,6 +282,18 @@ class HomeViewModel (): ViewModel() {
         val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         return format.format(date)
     }
+/*
+    private val _selectedWall = MutableStateFlow("")
+    val selectedWall = _selectedWall.asStateFlow()
+
+    fun setSelectedWall(wall: String) {
+        _selectedWall.value = wall
     }
+
+    fun cleanFilter(){
+        _selectedWall.value = ""
+    }*/
+
+}
 
 
