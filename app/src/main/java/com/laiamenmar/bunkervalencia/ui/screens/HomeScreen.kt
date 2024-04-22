@@ -118,7 +118,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
+                TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
         },
 
         bottomBar = {
@@ -140,7 +140,8 @@ fun HomeScreen(
                 navController = navController,
                 authManager = auth,
                 homeViewModel = homeViewModel,
-                realtime = realtime
+                realtime = realtime,
+                navigation
             )
         }
     }
@@ -296,7 +297,8 @@ fun BottomNavGraph(
     navController: NavHostController,
     authManager: AuthManager,
     homeViewModel: HomeViewModel,
-    realtime: RealtimeManager
+    realtime: RealtimeManager,
+    navigation: NavController
 ) {
 
     // val firestore = FirestoreManager(context)
@@ -306,7 +308,8 @@ fun BottomNavGraph(
             BouldersScreen(
                 realtime = realtime,
                 authManager = authManager,
-                homeViewModel = homeViewModel
+                homeViewModel = homeViewModel,
+                navigation = navigation
             )
         }
 

@@ -54,9 +54,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.Constants_Climb
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
+import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_1
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_2
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
@@ -77,6 +79,7 @@ fun BouldersScreen(
     realtime: RealtimeManager,
     authManager: AuthManager,
     homeViewModel: HomeViewModel,
+    navigation: NavController
 ) {
     val scope = rememberCoroutineScope()
 
@@ -90,7 +93,7 @@ fun BouldersScreen(
             .padding(12.dp)
     ) {
 
-        BoulderList(homeViewModel, realtime, scope, authManager)
+        BoulderList(homeViewModel, realtime, scope, authManager, navigation)
 
         AddBoulderDialog(
             dialogAddBoulder = dialogAddBoulder,
@@ -447,7 +450,8 @@ fun BoulderList(
     homeViewModel: HomeViewModel,
     realtime: RealtimeManager,
     scope: CoroutineScope,
-    authManager: AuthManager
+    authManager: AuthManager,
+    navigation: NavController
 ) {
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
     //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
@@ -518,7 +522,8 @@ fun BoulderList(
                             homeViewModel = homeViewModel,
                             boulder = boulder,
                             scope = scope,
-                            authManager = authManager
+                            authManager = authManager,
+                            navigation
                         )
                     }
                 }
@@ -552,7 +557,9 @@ fun ItemBoulder(
     homeViewModel: HomeViewModel,
     boulder: BoulderModel,
     scope: CoroutineScope,
-    authManager: AuthManager
+    authManager: AuthManager,
+    navigation: NavController
+
 ) {
     //val dialogUpdateBoulder: Boolean by homeViewModel.dialogUpdateBoulder.observeAsState(false)
     var dialogUpdateBoulder by remember { mutableStateOf(false) }
@@ -601,7 +608,8 @@ fun ItemBoulder(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { navigation.navigate(AppScreens.BoulderDetailScreen.route) },
         colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
         border = BorderStroke(2.dp, Color.Gray),
     ) {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,28 +26,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.model.UserModel
+import com.laiamenmar.bunkervalencia.ui.HomeViewModel
+import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
 import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_onPrimaryContainer
 import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_onSecondaryContainer
 import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_secondaryContainer
+import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun RouteSetterScreen (realtime: RealtimeManager) {
+fun RouteSetterScreen (
+    realtime: RealtimeManager,
+    homeViewModel: HomeViewModel, navigation: NavController
+) {
     val scope = rememberCoroutineScope()
-   Column(modifier = Modifier
-       .fillMaxSize()
-       .background(color = Color.LightGray)
-       .padding(12.dp)) {
+    Scaffold(
+        topBar = {
+            TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                TitleScreen("Equipadores", Modifier.align(Alignment.CenterHorizontally))
 
-       Text(text = "Elige Equipador")
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        UserList(realtime, scope)
-   }
+                UserList(realtime, scope)
+            }
+        }
+    )
 }
 
 @Composable
@@ -88,3 +101,5 @@ fun UserListItem(user: UserModel, scope: CoroutineScope, realtime: RealtimeManag
             )*/)
     }
 }
+
+

@@ -10,6 +10,7 @@ import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
 import com.laiamenmar.bunkervalencia.ui.screens.Screen
+import com.laiamenmar.bunkervalencia.ui.screens.home.BoulderDetailScreen
 import com.laiamenmar.bunkervalencia.ui.screens.home.RouteSetterScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.ForgotPasswordScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.LoginScreen
@@ -22,7 +23,12 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
  * Se encarga de la navegación entre pantallas
  */
 @Composable
-fun AppNavigation (context: Context, navController: NavHostController = rememberNavController(), loginViewModel: LoginViewModel, homeViewModel: HomeViewModel) {
+fun AppNavigation(
+    context: Context,
+    navController: NavHostController = rememberNavController(),
+    loginViewModel: LoginViewModel,
+    homeViewModel: HomeViewModel
+) {
 
     val analytics = AnalyticsManager(context)
     val realtime = RealtimeManager(context)
@@ -56,7 +62,12 @@ fun AppNavigation (context: Context, navController: NavHostController = remember
             }
             composable(route = AppScreens.RouteSetterScreen.route) {
                 RouteSetterScreen(
-                    realtime
+                    realtime, homeViewModel, navController
+                )
+            }
+            composable(route = AppScreens.BoulderDetailScreen.route) {
+                BoulderDetailScreen(
+                    realtime, homeViewModel, navController
                 )
             }
         }
