@@ -7,6 +7,7 @@ data class UserModel(
     val urlPhoto: String?,
     val router_setter: Boolean = false
 ) {
+    constructor() : this("", "", "", null, false)
     fun toMap(): MutableMap<String, Any?> {
         return mutableMapOf(
             "user_id" to this.user_id,

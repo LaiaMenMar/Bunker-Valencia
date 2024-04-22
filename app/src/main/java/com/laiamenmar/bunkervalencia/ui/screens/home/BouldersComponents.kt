@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 
@@ -12,6 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -28,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -167,6 +172,65 @@ fun SocialIcon(
         )
     }
 }
+
+
+@Composable
+fun ColorsChips(
+    selectedColors: Set<String>,
+    availableColors: List<String>,
+    onColorSelected: (String) -> Unit,
+    onColorDeselected: (String) -> Unit
+) {
+    LazyRow(
+        contentPadding = PaddingValues(vertical = 4.dp),
+        // horizontalArrangement = Arrangement.SpaceAround,
+        // modifier = Modifier.fillMaxWidth()
+    ) {
+        items(availableColors) { color ->
+            val isSelected = selectedColors.contains(color)
+            Chip(
+                backgroundColor = if (isSelected) getColorlikeColor(color) else Color.Gray,
+                gradeText = getMaxGradeForColor(color),
+                onClick = {
+                    if (isSelected) {
+                        onColorDeselected(color)
+                    } else {
+                        onColorSelected(color)
+                    }
+                },
+                modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun Chip(
+    backgroundColor: Color,
+    gradeText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color.Gray
+        ),
+        color = backgroundColor,
+        modifier = modifier
+    ) {
+        Text(
+            text = gradeText,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+        )
+    }
+}
+
 
 
 

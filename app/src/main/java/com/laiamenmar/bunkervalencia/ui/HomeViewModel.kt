@@ -170,6 +170,8 @@ class HomeViewModel (): ViewModel() {
         val color: String = getColorForGrade(_gradeInput.value!!)
         _gradeColor.value = color
 
+        _boulder.value = BoulderModel()
+
         _boulder.value = BoulderModel(
             note = _noteInput.value.toString(),
             uid_routeSeter = _currentUser.value!!.user_id,

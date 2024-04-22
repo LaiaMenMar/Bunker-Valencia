@@ -55,7 +55,7 @@ class LoginViewModel:ViewModel() {
     }
 
     private fun enableLogin(email: String, password: String) =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 7
+        Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 
     // Autenticación por correo electrónico
     suspend fun emailPassSignIn(

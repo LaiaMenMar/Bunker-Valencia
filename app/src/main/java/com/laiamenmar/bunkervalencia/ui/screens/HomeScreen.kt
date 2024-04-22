@@ -118,7 +118,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopBarWelcome(homeViewModel = homeViewModel)
+            TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
         },
 
         bottomBar = {
@@ -148,7 +148,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarWelcome(homeViewModel: HomeViewModel) {
+fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController ) {
     val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     TopAppBar(
         title = {
@@ -213,12 +213,15 @@ fun TopBarWelcome(homeViewModel: HomeViewModel) {
             }
             IconButton(
                 onClick = {
+                    navigation.navigate(AppScreens.RouteSetterScreen.route)
+                    //analytics.logButtonClicked("Click: No tienes una cuenta? Regístrate")
                 }
             ) {
                 Icon(Icons.Filled.Person, contentDescription = "Perfil")
             }
             IconButton(
                 onClick = {
+                  //  navigation.navigateUp()
                 }
             ) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Atras")

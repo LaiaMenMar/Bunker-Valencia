@@ -10,6 +10,7 @@ import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
 import com.laiamenmar.bunkervalencia.ui.screens.Screen
+import com.laiamenmar.bunkervalencia.ui.screens.home.RouteSetterScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.ForgotPasswordScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.LoginScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.RegisterScreen
@@ -51,6 +52,11 @@ fun AppNavigation (context: Context, navController: NavHostController = remember
             composable(route = AppScreens.HomeScreen.route) {
                 HomeScreen(
                     analytics, authManager, navController, homeViewModel, realtime
+                )
+            }
+            composable(route = AppScreens.RouteSetterScreen.route) {
+                RouteSetterScreen(
+                    realtime
                 )
             }
         }
