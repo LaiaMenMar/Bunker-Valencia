@@ -88,35 +88,33 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation("androidx.navigation:navigation-compose:2.5.0-alpha01")
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // CameraX core library using the camera2 implementation
-    val camerax_version = "1.4.0-alpha05"
+    //val camerax_version = "1.3.0-rc01"
     // The following line is optional, as the core library is included indirectly by camera-camera2
     //implementation("androidx.camera:camera-core:${camerax_version}")
-    implementation("androidx.camera:camera-camera2:${camerax_version}")
+   // implementation("androidx.camera:camera-camera2:${camerax_version}")
     // If you want to additionally use the CameraX Lifecycle library
-    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+   // implementation("androidx.camera:camera-lifecycle:${camerax_version}")
     // If you want to additionally use the CameraX VideoCapture library
   //  implementation("androidx.camera:camera-video:${camerax_version}")
     // If you want to additionally use the CameraX View class
-    implementation("androidx.camera:camera-view:${camerax_version}")
+    //implementation("androidx.camera:camera-view:${camerax_version}")
     // If you want to additionally add CameraX ML Kit Vision Integration
   //  implementation("androidx.camera:camera-mlkit-vision:${camerax_version}")
     // If you want to additionally use the CameraX Extensions library
    // implementation("androidx.camera:camera-extensions:${camerax_version}")
 
+    //permisos
+   // implementation("com.google.accompanist:accompanist-permissions:0.28.0")
 
-    //inyeccion de dependencias
-    // implementation("com.google.dagger:hilt-android:2.41")
-//    kapt("com.google.dagger:hilt-android-compiler:2.41")
-
-    //Coil
-    implementation("io.coil-kt:coil-compose:2.6.0")
 }
 
 

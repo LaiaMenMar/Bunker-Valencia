@@ -42,7 +42,7 @@ class RealtimeManager (context: Context) {
 
     suspend fun getUserNameById(userId: String): String? {
         return try {
-            val userSnapshot = usersReference.child(userId.toString()).get().await()
+            val userSnapshot = usersReference.child(userId).get().await()
             if (userSnapshot.exists()) {
                 userSnapshot.child("display_name").value.toString()
             } else {

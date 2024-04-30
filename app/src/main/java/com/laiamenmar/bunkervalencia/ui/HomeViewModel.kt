@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HomeViewModel (): ViewModel() {
+class HomeViewModel(): ViewModel() {
 
     //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
     private val _currentUser = MutableLiveData<UserModel>()
@@ -295,6 +295,8 @@ class HomeViewModel (): ViewModel() {
     fun cleanFilter(){
         _selectedWall.value = ""
     }*/
+
+
 
 }
 

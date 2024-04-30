@@ -1,11 +1,6 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
-import android.net.Uri
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
-import androidx.camera.view.PreviewView
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues

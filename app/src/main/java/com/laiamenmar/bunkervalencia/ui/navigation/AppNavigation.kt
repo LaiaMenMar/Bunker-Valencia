@@ -17,6 +17,7 @@ import com.laiamenmar.bunkervalencia.ui.screens.login.LoginScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.RegisterScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
+import com.laiamenmar.bunkervalencia.utils.CloudStorageManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
 /**
@@ -27,12 +28,13 @@ fun AppNavigation(
     context: Context,
     navController: NavHostController = rememberNavController(),
     loginViewModel: LoginViewModel,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
 
     val analytics = AnalyticsManager(context)
     val realtime = RealtimeManager(context)
     val authManager = AuthManager(context, realtime)
+    val storage = CloudStorageManager(context, realtime)
 
     Screen {
         NavHost(
@@ -67,7 +69,7 @@ fun AppNavigation(
             }
             composable(route = AppScreens.BoulderDetailScreen.route) {
                 BoulderDetailScreen(
-                    realtime, homeViewModel, navController
+                    realtime, homeViewModel, navController, storage
                 )
             }
         }
