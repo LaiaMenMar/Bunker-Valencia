@@ -1,13 +1,21 @@
 package com.laiamenmar.bunkervalencia.ui
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.UserModel
+import com.laiamenmar.bunkervalencia.ui.screens.home.createImageFile
 import com.laiamenmar.bunkervalencia.ui.theme.*
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +25,15 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Objects
 
 class HomeViewModel(): ViewModel() {
+
+    private val _capturedImageUri = MutableLiveData<Uri>()
+    val capturedImageUri: LiveData<Uri> = _capturedImageUri
+    fun setcapturedImageUri(uri: Uri) {
+        _capturedImageUri.value = uri
+    }
 
     //   class HomeViewModel(private val realtime: RealtimeManager) : ViewModel() {
     private val _currentUser = MutableLiveData<UserModel>()

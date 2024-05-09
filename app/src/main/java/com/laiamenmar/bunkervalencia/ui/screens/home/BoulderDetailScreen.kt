@@ -5,9 +5,14 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -26,9 +31,11 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,14 +45,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
+import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
 import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_primary
 import com.laiamenmar.bunkervalencia.utils.CloudStorageManager
@@ -55,8 +70,10 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Objects
+import java.util.concurrent.Executor
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BoulderDetailScreen(
     realtime: RealtimeManager,
@@ -64,55 +81,82 @@ fun BoulderDetailScreen(
     navigation: NavController,
     storage: CloudStorageManager,
 ) {
-    val scope = rememberCoroutineScope()
+   /* val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+
     val context = LocalContext.current
+    val cameraController = remember {
+        LifecycleCameraController(context)
+    }
+    val lifecycle = LocalLifecycleOwner.current
 
-    val file = context.createImageFile()
+    LaunchedEffect(Unit) {
+        permissionState.launchPermissionRequest()
+    }*/
 
-    val uri = FileProvider.getUriForFile(
+
+  //  val scope = rememberCoroutineScope()
+
+
+   // val context = LocalContext.current
+  //  val file = context.createImageFile(context)
+
+   /* val file = context.createImageFile()
+   val uri = FileProvider.getUriForFile(
         Objects.requireNonNull(context),
-        "io.laiamenmar.bunkervalencia" + ".provider", file
-    )
+        "io.laiamenmar.bunkervalencia.provider",
+         file)*/
 
-    var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
+    /*
+   val uri = FileProvider.getUriForFile(
+       context,
+       "${context.packageName}.provider",
+       file
+   )*/
 
-    val cameraLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) {
+
+    /*
+
+    val externalCacheDir = context.getExternalCacheDir()
+    if (externalCacheDir == null) {
+        Log.e("Debug", "El directorio de caché externo no está disponible")
+    } else {
+        val writePermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (writePermission != PackageManager.PERMISSION_GRANTED) {
+            Log.e("Debug", "No se tienen permisos de escritura en el directorio de caché externo")
+        } else {
+            Log.d("Debug", "El directorio de caché externo está disponible y se tienen permisos de escritura")
+        }
+    }
+
+*/
+   // val capturedImageUri: Uri by homeViewModel.capturedImageUri.observeAsState(initial = uri)
+
+ //   var capturedImageUri
+   /* val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         if (it) {
-            Toast.makeText(context, "Foto realizada", Toast.LENGTH_SHORT).show()
-            capturedImageUri = uri
+            Toast.makeText(context, "Foto tomada", Toast.LENGTH_SHORT).show()
             capturedImageUri?.let { uri ->
                 scope.launch {
-                    val fileSizeInBytes = file.length()
-                    val fileSizeInKb = fileSizeInBytes / 1024
-                    Log.d(
-                        "laia",
-                        "Tamaño del archivo: $fileSizeInKb KB y Ruta de la imagen: ${file.absolutePath}"
-                    )
                     storage.uploadFile(file.name, uri)
                 }
             }
         } else {
-            Toast.makeText(context, "No se pudo hacer la foto $it", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "No se pudo tomar la foto", Toast.LENGTH_SHORT).show()
         }
+    }*/
 
-    }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
+   /* val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()) {
         if (it) {
             Toast.makeText(context, "Permiso autorizado", Toast.LENGTH_SHORT).show()
             cameraLauncher.launch(uri)
         } else {
             Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    var arePermissionsGranted by remember { mutableStateOf(false) }
-
-
+    }*/
 
     Scaffold(
         topBar = {
@@ -142,24 +186,7 @@ fun BoulderDetailScreen(
                         } else {
                             IconButton(
                                 onClick = {
-                                    val permissionCheckResult =
-                                        ContextCompat.checkSelfPermission(
-                                            context,
-                                            Manifest.permission.CAMERA
-                                        )
-                                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                                        cameraLauncher.launch(uri)
-
-                                    } else {
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                                    }
-
-                                    /* if (permissionState.status.isGranted) {
-                                  navigation.navigate(AppScreens.CameraScreen.route)
-                              } else {
-                              //Text(text = "Permiso Denegado")
-                          }
-                              Log.i("CameraX", "ON CLICK")*/
+                                    navigation.navigate(AppScreens.CameraScreen.route)
                                 },
                                 modifier = Modifier.align(Alignment.Center),
                                 content = {
@@ -176,12 +203,13 @@ fun BoulderDetailScreen(
                             )
                         }
                     }
+
                 }
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
                 Column(
                     modifier = Modifier
-                        // .weight(1f)
+                         .weight(1f)
                         .padding(horizontal = 16.dp)
                         .fillMaxSize()
                 ) {
@@ -213,6 +241,9 @@ fun BoulderDetailScreen(
         }
     )
 }
+
+
+
 
 @Composable
 fun CoilImage(
@@ -251,11 +282,22 @@ fun CoilImage(
 
 fun Context.createImageFile(): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val imageFileName = "JPEG" + timeStamp + "_"
+    val imageFileName = "JPEG" + "LAIA" + "_"
     return File.createTempFile(
         imageFileName,
         ".jpg",
         externalCacheDir
     )
 }
+/*
+fun Context.createImageFile(context: Context): File {
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val imageFileName = "JPEG" + "LAIA" + "_"
+    return File.createTempFile(
+        imageFileName,
+        ".jpg",
+       // context.filesDir
+        //context.getExternalFilesDir()
+    )
+}*/
 

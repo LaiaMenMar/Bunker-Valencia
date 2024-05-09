@@ -108,7 +108,7 @@ sealed class AuthRes<out T> {
             val account = task.getResult(ApiException::class.java)
             AuthRes.Success(account)
         } catch (e: ApiException) {
-            AuthRes.Error(e.message ?: "Google sign-in failed.")
+            AuthRes.Error(e.message ?: "Inicio con Google fallido")
         }
     }
     suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthRes<FirebaseUser>? {
@@ -119,9 +119,9 @@ sealed class AuthRes<out T> {
                 realtimeManager.createUser(userId.toString(), it.displayName, it.email, it.photoUrl.toString())
 
                 AuthRes.Success(it)
-            } ?: throw Exception("Sign in with Google failed.")
+            } ?: throw Exception("Inicio con Google fallido")
         } catch (e: Exception) {
-            AuthRes.Error(e.message ?: "Sign in with Google failed.")
+            AuthRes.Error(e.message ?: "Inicio con Google fallido")
         }
     }
 

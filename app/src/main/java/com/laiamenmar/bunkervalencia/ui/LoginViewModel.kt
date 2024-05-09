@@ -19,6 +19,9 @@ import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 class LoginViewModel:ViewModel() {
+
+
+
     private val _emailInput = MutableStateFlow("")
     val emailInput: StateFlow<String> = _emailInput
 
@@ -111,8 +114,8 @@ class LoginViewModel:ViewModel() {
                 }
 
                 is AuthRes.Error -> {
-                    analytics.logError("Error SignUp: ${result.errorMessage}")
-                    Toast.makeText(context, "Error SignUp: ${result.errorMessage}", Toast.LENGTH_LONG)
+                    analytics.logError("Error en el registro: ${result.errorMessage}")
+                    Toast.makeText(context, "Error en el registro: ${result.errorMessage}", Toast.LENGTH_LONG)
                         .show()
                 }
 

@@ -7,6 +7,7 @@ import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
+import java.io.File
 
 class CloudStorageManager(context: Context,realtimeManager: RealtimeManager) { // borrar el realtime
     private val storage = Firebase.storage
@@ -15,7 +16,7 @@ class CloudStorageManager(context: Context,realtimeManager: RealtimeManager) { /
     private val userId = authManager.getCurrentUser()?.uid //borrar
 
     fun getStorageReference(): StorageReference {
-        return storageRef.child("photos").child(userId?:"")
+        return storageRef.child("photo").child(userId?:"")
     }
 
     suspend fun uploadFile(fileName: String, filePath: Uri){
@@ -23,6 +24,7 @@ class CloudStorageManager(context: Context,realtimeManager: RealtimeManager) { /
         val uploadTask = fileRef.putFile(filePath)
         uploadTask.await()
     }
+
 
     suspend fun getUserImages(): List<String> {
         val imageUrls = mutableListOf<String>()

@@ -8,5 +8,7 @@ sealed class AppScreens (val route: String) {
     object HomeScreen: AppScreens("Home Screen")
     object RouteSetterScreen: AppScreens("RouteSetter Screen")
     object BoulderDetailScreen: AppScreens("BoulderDetail Screen")
+    object CameraScreen: AppScreens("Camera Screen")
+
 
 }

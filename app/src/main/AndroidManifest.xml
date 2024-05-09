@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <provider
+       <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="io.laiamenmar.bunkervalencia.provider"
             android:exported= "false"
@@ -44,8 +44,11 @@
             android:resource="@xml/file_paths"/>
 
         </provider>
-    </application>
 
-    <!---android:name=".BunkerValenciaApp"-->
+    <!-- android:authorities="${applicationId}.provider"-->
+
+</application>
+
+<!---android:name=".BunkerValenciaApp"-->
 
 </manifest>

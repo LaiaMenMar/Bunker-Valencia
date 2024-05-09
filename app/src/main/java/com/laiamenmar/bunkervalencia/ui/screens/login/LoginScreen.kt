@@ -143,7 +143,7 @@ fun LoginScreen(
             ClickableTextButton(
                 text = "¿No tienes una cuenta? Regístrate",
                 onClick = {
-                    navigation.navigate(AppScreens.RouteSetterScreen.route)
+                    navigation.navigate(AppScreens.RegisterScreen.route)
                     analytics.logButtonClicked("Click: No tienes una cuenta? Regístrate")
                 },
                 Modifier.align(Alignment.CenterHorizontally)

@@ -11,6 +11,7 @@ import com.laiamenmar.bunkervalencia.ui.LoginViewModel
 import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
 import com.laiamenmar.bunkervalencia.ui.screens.Screen
 import com.laiamenmar.bunkervalencia.ui.screens.home.BoulderDetailScreen
+import com.laiamenmar.bunkervalencia.ui.screens.home.CameraScreen
 import com.laiamenmar.bunkervalencia.ui.screens.home.RouteSetterScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.ForgotPasswordScreen
 import com.laiamenmar.bunkervalencia.ui.screens.login.LoginScreen
@@ -70,6 +71,11 @@ fun AppNavigation(
             composable(route = AppScreens.BoulderDetailScreen.route) {
                 BoulderDetailScreen(
                     realtime, homeViewModel, navController, storage
+                )
+            }
+
+            composable(route = AppScreens.CameraScreen.route) {
+                CameraScreen(navController, storage
                 )
             }
         }

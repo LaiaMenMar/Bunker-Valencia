@@ -60,14 +60,14 @@ class RealtimeManager (context: Context) {
             .addOnSuccessListener {
                 Log.d(
                     "RealtimeManager",
-                    "Valor de router_setter actualizado con éxito en la base de datos para el usuario $userId"
+                    "Valor de router_setter actualizado con éxito en la base de datos"
                 )
             }
             .addOnFailureListener { e ->
                 // Manejar el fallo de la operación, si es necesario
                 Log.e(
                     "RealtimeManager",
-                    "Error al actualizar valor de router_setter en la base de datos para el usuario $userId",
+                    "Error al actualizar valor de router_setter en la base de datos",
                     e
                 )
             }
