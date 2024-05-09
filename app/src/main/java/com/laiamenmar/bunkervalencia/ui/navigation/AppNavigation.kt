@@ -75,7 +75,7 @@ fun AppNavigation(
             }
 
             composable(route = AppScreens.CameraScreen.route) {
-                CameraScreen(navController, storage
+                CameraScreen(navController, storage, homeViewModel
                 )
             }
         }

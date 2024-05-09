@@ -609,7 +609,9 @@ fun ItemBoulder(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { navigation.navigate(AppScreens.BoulderDetailScreen.route) },
+            .clickable {
+                homeViewModel.setSelectedBoulder(boulder)
+                navigation.navigate(AppScreens.BoulderDetailScreen.route) },
         colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
         border = BorderStroke(2.dp, Color.Gray),
     ) {

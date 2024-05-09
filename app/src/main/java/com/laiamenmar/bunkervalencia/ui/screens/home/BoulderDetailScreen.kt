@@ -80,83 +80,11 @@ fun BoulderDetailScreen(
     homeViewModel: HomeViewModel,
     navigation: NavController,
     storage: CloudStorageManager,
+
 ) {
-   /* val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    val selectedBoulder by homeViewModel.selectedBoulder.observeAsState()
 
-    val context = LocalContext.current
-    val cameraController = remember {
-        LifecycleCameraController(context)
-    }
-    val lifecycle = LocalLifecycleOwner.current
-
-    LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
-    }*/
-
-
-  //  val scope = rememberCoroutineScope()
-
-
-   // val context = LocalContext.current
-  //  val file = context.createImageFile(context)
-
-   /* val file = context.createImageFile()
-   val uri = FileProvider.getUriForFile(
-        Objects.requireNonNull(context),
-        "io.laiamenmar.bunkervalencia.provider",
-         file)*/
-
-    /*
-   val uri = FileProvider.getUriForFile(
-       context,
-       "${context.packageName}.provider",
-       file
-   )*/
-
-
-    /*
-
-    val externalCacheDir = context.getExternalCacheDir()
-    if (externalCacheDir == null) {
-        Log.e("Debug", "El directorio de caché externo no está disponible")
-    } else {
-        val writePermission = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        if (writePermission != PackageManager.PERMISSION_GRANTED) {
-            Log.e("Debug", "No se tienen permisos de escritura en el directorio de caché externo")
-        } else {
-            Log.d("Debug", "El directorio de caché externo está disponible y se tienen permisos de escritura")
-        }
-    }
-
-*/
-   // val capturedImageUri: Uri by homeViewModel.capturedImageUri.observeAsState(initial = uri)
-
- //   var capturedImageUri
-   /* val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-        if (it) {
-            Toast.makeText(context, "Foto tomada", Toast.LENGTH_SHORT).show()
-            capturedImageUri?.let { uri ->
-                scope.launch {
-                    storage.uploadFile(file.name, uri)
-                }
-            }
-        } else {
-            Toast.makeText(context, "No se pudo tomar la foto", Toast.LENGTH_SHORT).show()
-        }
-    }*/
-
-   /* val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()) {
-        if (it) {
-            Toast.makeText(context, "Permiso autorizado", Toast.LENGTH_SHORT).show()
-            cameraLauncher.launch(uri)
-        } else {
-            Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
-        }
-    }*/
+    Log.d("Laia", "Boulder seleccionado: ${selectedBoulder?.grade}")
 
     Scaffold(
         topBar = {
@@ -242,9 +170,6 @@ fun BoulderDetailScreen(
     )
 }
 
-
-
-
 @Composable
 fun CoilImage(
     imageUrl: String,
@@ -279,25 +204,3 @@ fun CoilImage(
     )
 
 }
-
-fun Context.createImageFile(): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val imageFileName = "JPEG" + "LAIA" + "_"
-    return File.createTempFile(
-        imageFileName,
-        ".jpg",
-        externalCacheDir
-    )
-}
-/*
-fun Context.createImageFile(context: Context): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val imageFileName = "JPEG" + "LAIA" + "_"
-    return File.createTempFile(
-        imageFileName,
-        ".jpg",
-       // context.filesDir
-        //context.getExternalFilesDir()
-    )
-}*/
-

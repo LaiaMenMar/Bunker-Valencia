@@ -19,7 +19,7 @@ class CloudStorageManager(context: Context,realtimeManager: RealtimeManager) { /
         return storageRef.child("photo").child(userId?:"")
     }
 
-    suspend fun uploadFile(fileName: String, filePath: Uri){
+    suspend fun  uploadFile(fileName: String, filePath: Uri){
         val fileRef = getStorageReference().child(fileName)
         val uploadTask = fileRef.putFile(filePath)
         uploadTask.await()
@@ -37,16 +37,17 @@ class CloudStorageManager(context: Context,realtimeManager: RealtimeManager) { /
     }
 
 
-  /*  fun getStorageReference(): StorageReference {
-        return storageRef.child("photos")
+   fun getStorageReferenceBoulders(): StorageReference {
+        return storageRef.child("boulders")
     }
 
-    suspend fun uploadFile(fileName: String, filePath: Uri, key: String){
-        val fileRef = getStorageReference().child(key).child(fileName)
+    suspend fun uploadFileBoulder(fileName: String, filePath: Uri, key: String){
+        val fileRef = getStorageReferenceBoulders().child(key).child(fileName)
         val uploadTask = fileRef.putFile(filePath)
         uploadTask.await()
     }
-    suspend fun getImages(key: String): List<String> {
+
+    /*suspend fun getImages(key: String): List<String> {
         val imageUrls = mutableListOf<String>()
         val listResult: ListResult = getStorageReference().child(key).listAll().await()
          for(item in listResult.items){
