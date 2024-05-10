@@ -1,6 +1,5 @@
 package com.laiamenmar.bunkervalencia.ui
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
@@ -10,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +20,12 @@ import java.util.Locale
 
 
 class HomeViewModel(): ViewModel() {
+    private val _gallery = MutableSharedFlow<List<String>>()
+    val gallery: Flow<List<String>> = _gallery
+
+    suspend fun updateGallery(images: List<String>) {
+        _gallery.emit(images)
+    }
 
     private val _selectedBoulder = MutableLiveData<BoulderModel?>()
     val selectedBoulder: LiveData<BoulderModel?> = _selectedBoulder

@@ -3,6 +3,7 @@ package com.laiamenmar.bunkervalencia.ui.screens.home
 import android.Manifest
 import android.net.Uri
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.LifecycleCameraController
@@ -57,7 +58,8 @@ fun CameraScreen(navigation: NavController,  storage: CloudStorageManager, homeV
     Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingActionButton(onClick = {
             val executor = ContextCompat.getMainExecutor(context)
-            takePicture(cameraController, executor, navigation, storage, scope, selectedBoulder)
+            takePicture(cameraController, executor, navigation, storage, scope, selectedBoulder, homeViewModel)
+            Toast.makeText(context, "Subiendo imagen...", Toast.LENGTH_LONG).show()
         }) {
             Text(text = "Camara!")
         }
@@ -76,7 +78,8 @@ private fun takePicture(
     navigation: NavController,
     storage: CloudStorageManager,
     scope: CoroutineScope,
-    selectedBoulder: BoulderModel?
+    selectedBoulder: BoulderModel?,
+    homeViewModel: HomeViewModel
 ) {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     val file = File.createTempFile(timeStamp + "photo", ".jpg")
@@ -87,19 +90,19 @@ private fun takePicture(
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 println(outputFileResults.savedUri)
-
                 scope.launch{
-                 //   storage.uploadFile(file.name, Uri.fromFile(file))
-                    if (selectedBoulder != null) {
+
+                  if (selectedBoulder != null) {
                         selectedBoulder.key?.let {
                             storage.uploadFileBoulder(file.name, Uri.fromFile(file),
                                 it
                             )
+                            val images = storage.getBoulderImage(it)
+                            homeViewModel.updateGallery(images)
+                            navigation.popBackStack()
                         }
                     }
                 }
-
-                navigation.popBackStack()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -115,7 +118,6 @@ fun CamaraComposable(
     lifecycle: LifecycleOwner,
     modifier: Modifier = Modifier,
 ) {
-
     cameraController.bindToLifecycle(lifecycle)
     AndroidView(modifier = modifier, factory = { context ->
         val previewView = PreviewView(context).apply {
