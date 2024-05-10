@@ -167,12 +167,12 @@ fun ColorsChips(
     selectedColors: Set<String>,
     availableColors: List<String>,
     onColorSelected: (String) -> Unit,
-    onColorDeselected: (String) -> Unit
+    onColorDeselected: (String) -> Unit,
+    modifier: Modifier
 ) {
     LazyRow(
         contentPadding = PaddingValues(vertical = 4.dp),
-        // horizontalArrangement = Arrangement.SpaceAround,
-        // modifier = Modifier.fillMaxWidth()
+
     ) {
         items(availableColors) { color ->
             val isSelected = selectedColors.contains(color)
@@ -186,7 +186,7 @@ fun ColorsChips(
                         onColorSelected(color)
                     }
                 },
-                modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp)
+                modifier = modifier.padding(horizontal = 2.dp, vertical = 2.dp)
             )
         }
     }
@@ -214,7 +214,8 @@ fun Chip(
             text = gradeText,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            color = if (gradeText== "8c+"){Color.White}else {Color.Black}
         )
     }
 }

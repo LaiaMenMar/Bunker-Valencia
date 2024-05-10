@@ -449,8 +449,7 @@ fun BoulderList(
     navigation: NavController
 ) {
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
-    //  val myBouldersList: List<BoulderModel> = homeViewModel.boulder
-   // val selectedWall by homeViewModel.selectedWall.collectAsState()
+
     var selectedWall by remember { mutableStateOf("") }
     val allAvailableColors = listOf(
         "difficulty_1",
@@ -482,26 +481,27 @@ fun BoulderList(
                 onClick = {  selectedWall = ""
                              selectedColors = allAvailableColors.toSet()
                 },
-                modifier = Modifier.padding(vertical = 4.dp)
+                modifier = Modifier.padding(vertical = 4.dp).weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Clear Filter",
-                    tint = Color.Gray
+                    tint = Color.Gray,
+
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-            ColorsChips(
+         ColorsChips(
                 selectedColors = selectedColors,
                 availableColors = allAvailableColors,
                 onColorSelected = { color ->
                     selectedColors = selectedColors + color
-                }
-            ) { color ->
-                selectedColors = selectedColors - color
-            }
-
+                },
+                onColorDeselected = { color ->
+                    selectedColors = selectedColors - color
+                },
+                modifier = Modifier.weight(1f)
+            )
         }
 
         val filteredBoulders = bouldersListFlow.filter { boulder ->
@@ -584,6 +584,7 @@ fun ItemBoulder(
            update = true,
            boulderOld = boulder
        )*/
+
     UpdateBoulderDialog(
         dialogUpdateBoulder = dialogUpdateBoulder,
         onDismiss = { dialogUpdateBoulder = false },
