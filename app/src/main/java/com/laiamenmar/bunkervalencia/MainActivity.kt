@@ -25,11 +25,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BunkerValenciaTheme {
-                AppNavigation(this, rememberNavController(), loginViewModel, homeViewModel)
+               AppNavigation(this, rememberNavController(), loginViewModel, homeViewModel)
             }
         }
     }
 }
+
+
 
 
 

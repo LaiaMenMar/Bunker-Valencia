@@ -44,11 +44,11 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
+
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_primary
+
 import com.laiamenmar.bunkervalencia.utils.CloudStorageManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import java.text.SimpleDateFormat
@@ -102,7 +102,7 @@ fun BoulderDetailScreen(
                                 Icon(
                                     imageVector = Icons.Sharp.CameraAlt,
                                     contentDescription = "Take picture",
-                                    tint = md_theme_light_primary,
+                                    //tint = md_theme_light_primary,
                                     modifier = Modifier
                                         .size(100.dp)
                                         .padding(1.dp)

@@ -60,7 +60,7 @@ import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_4
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_5
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_6
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_outlineVariant
+
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
@@ -607,7 +607,7 @@ fun ItemBoulder(
             .clickable {
                 homeViewModel.setSelectedBoulder(boulder)
                 navigation.navigate(AppScreens.BoulderDetailScreen.route) },
-        colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
+      //  colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
         border = BorderStroke(2.dp, Color.Gray),
     ) {
         Column(

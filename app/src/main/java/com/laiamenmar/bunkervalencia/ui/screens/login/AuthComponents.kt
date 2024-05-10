@@ -40,8 +40,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.laiamenmar.bunkervalencia.R
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_primary
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_primaryContainer
+
 
 
 @Composable
@@ -119,11 +118,11 @@ fun ActionButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = md_theme_light_primary,
-            disabledContainerColor = md_theme_light_primaryContainer,
-            contentColor= Color.White,
-            disabledContentColor = Color.White),
+      //  colors = ButtonDefaults.buttonColors(
+        //    containerColor = md_theme_light_primary,
+        //    disabledContainerColor = md_theme_light_primaryContainer,
+          //  contentColor= Color.White,
+           // disabledContentColor = Color.White),
 
 
 

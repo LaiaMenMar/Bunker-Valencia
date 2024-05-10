@@ -30,10 +30,8 @@ import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_onPrimaryContainer
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_onSecondaryContainer
-import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_secondaryContainer
-import com.laiamenmar.bunkervalencia.utils.AuthManager
+
+
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -84,7 +82,7 @@ fun UserListItem(user: UserModel, scope: CoroutineScope, realtime: RealtimeManag
             .padding(8.dp)
     ) {
         Text(text = user.display_name,
-            color = md_theme_light_onPrimaryContainer,
+          //  color = md_theme_light_onPrimaryContainer,
             modifier = Modifier.weight(1f))
 
         Checkbox(

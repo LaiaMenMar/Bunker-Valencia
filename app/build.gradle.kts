@@ -116,6 +116,8 @@ dependencies {
     //permisos
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
 
+
+
 }
 
 
