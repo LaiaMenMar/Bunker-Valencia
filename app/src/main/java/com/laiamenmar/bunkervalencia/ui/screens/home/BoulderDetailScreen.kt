@@ -1,16 +1,25 @@
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.sharp.CameraAlt
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -38,9 +51,10 @@ import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
 import com.laiamenmar.bunkervalencia.ui.theme.md_theme_light_primary
 import com.laiamenmar.bunkervalencia.utils.CloudStorageManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BoulderDetailScreen(
     realtime: RealtimeManager,
@@ -50,9 +64,14 @@ fun BoulderDetailScreen(
 
 ) {
     val selectedBoulder by homeViewModel.selectedBoulder.observeAsState()
+
+
     val keySelect = selectedBoulder?.key
 
     val gallery by homeViewModel.gallery.collectAsState(initial = emptyList())
+    val date = selectedBoulder?.let { Date(it.id) }
+    val sdf = SimpleDateFormat("dd/MM/yyyy")
+    val formattedDate = sdf.format(date)
 
     LaunchedEffect(keySelect) {
         keySelect?.let { key ->
@@ -61,68 +80,48 @@ fun BoulderDetailScreen(
         }
     }
 
+
     Scaffold(
         topBar = {
             TopBarWelcome(homeViewModel = homeViewModel, navigation = navigation)
         },
         content = { paddingValues ->
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
-                TitleScreen("Boulder", Modifier.align(Alignment.CenterHorizontally))
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f) // Ocupa la mitad del espacio disponible
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        if (false) { //hay foto en firebase
-                            TitleScreen("EXISTE", Modifier)
-
-                        } else {
-                            IconButton(
-                                onClick = {
-                                    navigation.navigate(AppScreens.CameraScreen.route)
-                                },
-                                modifier = Modifier.align(Alignment.Center),
-                                content = {
-                                    Icon(
-                                        imageVector = Icons.Sharp.CameraAlt,
-                                        contentDescription = "Take picture",
-                                        tint = md_theme_light_primary,
-                                        modifier = Modifier
-                                            .size(100.dp)
-                                            .padding(1.dp)
-                                            .border(1.dp, Color.White, CircleShape)
-                                    )
-                                }
-                            )
-                        }
+                if (gallery.isEmpty()) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        IconButton(
+                            onClick = {
+                                navigation.navigate(AppScreens.CameraScreen.route)
+                            },
+                            modifier = Modifier.align(Alignment.Center),
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Sharp.CameraAlt,
+                                    contentDescription = "Take picture",
+                                    tint = md_theme_light_primary,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(1.dp)
+                                        .border(1.dp, Color.White, CircleShape)
+                                )
+                            }
+                        )
                     }
-
-                }
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                        .fillMaxSize()
-                ) {
-                    TitleScreen("Parte2", Modifier.align(Alignment.CenterHorizontally))
-
-
-                    if (gallery.isEmpty()){
-                        Text(text = " No hay fotos")
-
-                    } else { Text(text = "Si hay")}
+                } else {
+                    val firstImageUrl = gallery.firstOrNull()
+                    if (firstImageUrl != null) {
+                        CoilImage(
+                            imageUrl = firstImageUrl,
+                            contentDescription = null,
+                            modifier = Modifier.
+                                    weight(1f),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                     /*LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         modifier = Modifier.fillMaxSize()
@@ -142,6 +141,106 @@ fun BoulderDetailScreen(
                         }
                     }*/
                 }
+
+                Divider(modifier = Modifier.padding(vertical = 2.dp))
+                selectedBoulder?.let { boulder ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                ) {
+                //    TitleScreen("Búlder", Modifier.align(Alignment.CenterHorizontally))
+                    Text(
+                        text = boulder.note,
+                        fontSize = 18.sp,
+                        color = Color.Black,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = boulder.wall_id,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 24.sp,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = formattedDate,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 20.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = Color.Black
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            val buttonColors = if (boulder.color == "difficulty_6") {
+                                ButtonDefaults.buttonColors(
+                                    contentColor = Color.White,
+                                    containerColor = getColorlikeColor(boulder.color)
+                                )
+                            } else {
+                                ButtonDefaults.buttonColors(
+                                    contentColor = Color.Black,
+                                    containerColor = getColorlikeColor(boulder.color)
+                                )
+                            }
+                            Button(
+                                onClick = { },
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .height(56.dp)
+                                    .padding(horizontal = 16.dp),
+                                colors = buttonColors
+                            ) {
+                                Text(
+                                    text = boulder.grade,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = "Likes",
+                                tint = Color.Red,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = boulder.likes.toString(),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.ThumbUp,
+                                contentDescription = "Ascensos",
+                                tint = Color.Green,
+                                modifier = Modifier.size(24.dp).padding(start = 16.dp)
+                            )
+                            Text(
+                                text = boulder.ascents.toString(),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                    }
+                }
+
             }
         }
     )
@@ -174,7 +273,6 @@ fun CoilImage(
             })
             .build()
     )
-
     Image(
         painter = painter,
         contentDescription = contentDescription,
