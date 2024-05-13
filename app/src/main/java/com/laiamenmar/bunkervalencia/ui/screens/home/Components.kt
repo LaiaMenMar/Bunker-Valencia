@@ -154,8 +154,7 @@ fun SocialIcon(
 
         Text(
             text = if (isSelected) (defaultValue + 1).toString() else defaultValue.toString(),
-            color = Color(0xFF7E8B98),
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             modifier = Modifier.padding(start = 4.dp)
         )
     }

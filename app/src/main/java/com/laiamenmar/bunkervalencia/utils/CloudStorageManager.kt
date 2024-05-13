@@ -2,6 +2,7 @@ package com.laiamenmar.bunkervalencia.utils
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ListResult
@@ -19,7 +20,7 @@ class CloudStorageManager(
     private val storage = Firebase.storage
     private val storageRef = storage.reference
 
-    fun getStorageReferenceBoulders(): StorageReference {
+     fun getStorageReferenceBoulders(): StorageReference {
         return storageRef.child("boulders")
     }
 
@@ -28,6 +29,21 @@ class CloudStorageManager(
         val uploadTask = fileRef.putFile(filePath)
         uploadTask.await()
     }
+   suspend fun deleteBoulderImage(key: String) {
+       val listResult: ListResult = getStorageReferenceBoulders().child(key ?: "").listAll().await()
+       try {
+           listResult.items.forEach { item ->
+               item.delete()
+            }
+           getStorageReferenceBoulders().child(key ?: "").delete().await()
+        } catch (e: Exception) {
+            // Maneja cualquier excepción que pueda ocurrir
+            // Puedes registrarla en el log o manejarla de otra manera
+        }
+    }
+
+
+
 
     suspend fun getBoulderImage(key: String): List<String> {
         val imageUrls = mutableListOf<String>()
@@ -74,7 +90,8 @@ class CloudStorageManager(
         }
         return imageUrls
     }
+
+
+
 }
-
-
 

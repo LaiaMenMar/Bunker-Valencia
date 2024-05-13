@@ -2,6 +2,7 @@ package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -54,12 +56,15 @@ import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.Constants_Climb
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
+import com.laiamenmar.bunkervalencia.ui.theme.backgroundLight
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_1
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_2
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_4
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_5
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_6
+import com.laiamenmar.bunkervalencia.ui.theme.primaryLight
+import com.laiamenmar.bunkervalencia.ui.theme.tertiaryLight
 
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
@@ -460,14 +465,7 @@ fun BoulderList(
         "difficulty_6"
     )
 
-    val allAvailableGrades = listOf(
-        "4c",
-        "5c",
-        "6b+",
-        "7a+",
-        "7c+",
-        "8c+"
-    )
+
     var selectedColors by remember { mutableStateOf(allAvailableColors.toSet()) }
     Column {
         Walls_DropDownMenu(
@@ -610,6 +608,7 @@ fun ItemBoulder(
                 navigation.navigate(AppScreens.BoulderDetailScreen.route) },
       //  colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
         border = BorderStroke(2.dp, Color.Gray),
+
     ) {
         Column(
             modifier = Modifier
@@ -652,7 +651,8 @@ fun ItemBoulder(
                         modifier = Modifier
                             .width(300.dp)
                             .height(56.dp)
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 16.dp)
+                        ,
                         colors = buttonColors
                     ) {
                         Text(
@@ -667,7 +667,7 @@ fun ItemBoulder(
                             modifier = Modifier.weight(1f),
                             unselecetedIcon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(28.dp),
                                     imageVector = Icons.Default.Favorite,
                                     contentDescription = "likes",
                                     tint = Color.Gray
@@ -675,7 +675,7 @@ fun ItemBoulder(
                             },
                             selectedIcon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(28.dp),
                                     imageVector = Icons.Default.Favorite,
                                     contentDescription = "likes",
                                     tint = Color.Red
@@ -690,18 +690,18 @@ fun ItemBoulder(
                             modifier = Modifier.weight(1f),
                             unselecetedIcon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
-                                    imageVector = Icons.Outlined.ThumbUp,
+                                    modifier = Modifier.size(28.dp),
+                                    imageVector = Icons.Outlined.RocketLaunch,
                                     contentDescription = "done",
-                                    tint = Color.Red
-                                )
+                                    tint = Color.Gray
+                                    )
                             },
                             selectedIcon = {
                                 Icon(
-                                    modifier = Modifier.size(24.dp),
-                                    imageVector = Icons.Outlined.Add,
+                                    modifier = Modifier.size(28.dp),
+                                    imageVector = Icons.Outlined.RocketLaunch,
                                     contentDescription = "done",
-                                    tint = Color.Green
+                                    tint = tertiaryLight
                                 )
                             },
                             isSelected = true
@@ -790,10 +790,10 @@ fun getColorlikeColor(colorString: String): Color {
 fun getColorForPosition(grade: String): Color {
     return when (grade) {
         "4a", "4b", "4c" -> difficulty_1
-        "5a", "5b", "5c" -> difficulty_2
-        "6a", "6a+", "6b", -> difficulty_3
-        "6b+","6c", "6c+", "7a" -> difficulty_4
-        "7a+","7b", "7b+", "7c", "7c+" -> difficulty_5
+        "5a", "5b", "5c", "6a", "6a+" -> difficulty_2
+        "6b", "6b+","6c", "6c+" -> difficulty_3
+        "7a", "7a+", -> difficulty_4
+        "7b", "7b+", "7c", "7c+" -> difficulty_5
         "8a", "8a+", "8b", "8b+", "8c", "8c+" -> difficulty_6
         else -> Color.DarkGray
     }
@@ -801,12 +801,12 @@ fun getColorForPosition(grade: String): Color {
 
 fun getMaxGradeForColor(color: String): String {
     return when (color) {
-        "difficulty_1" -> "4c"
-        "difficulty_2" -> "5c"
+        "difficulty_1" -> "4a"
+        "difficulty_2" -> "5a"
         "difficulty_3" -> "6b"
         "difficulty_4" -> "7a"
-        "difficulty_5" -> "7c+"
-        "difficulty_6" -> "8c+"
+        "difficulty_5" -> "7b"
+        "difficulty_6" -> "8a"
         else -> "N/A"
     }
 }
