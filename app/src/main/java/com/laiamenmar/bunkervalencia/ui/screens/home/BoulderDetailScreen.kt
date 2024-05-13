@@ -76,7 +76,7 @@ fun BoulderDetailScreen(
 
     ) {
     val selectedBoulder by homeViewModel.selectedBoulder.observeAsState()
-    var deletedImage by remember { mutableStateOf(false) }
+    var dialogDeleteBoulder by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -93,6 +93,15 @@ fun BoulderDetailScreen(
             homeViewModel.updateGallery(imagesFlow)
         }
     }
+
+    DeleteBoulderDialog(
+        dialogDeleteBoulder = dialogDeleteBoulder,
+        onDismiss = { dialogDeleteBoulder = false },
+        onBoulderConfirmDelete = {
+            scope.launch { homeViewModel.onBoulder_Delete(realtime, keySelect) }
+            dialogDeleteBoulder = false
+            navigation.popBackStack()
+        })
 
 
     Scaffold(
@@ -302,19 +311,9 @@ fun BoulderDetailScreen(
                             .padding(8.dp)) {
                             Icon(
                                 modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable { //dialogUpdateBoulder = true
-                                    },
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "edit",
-                                tint = Color.Gray
-                            )
-                            Icon(
-                                modifier = Modifier
                                     .padding(start = 16.dp)
                                     .size(24.dp)
-                                    .clickable {// dialogDeleteBoulder = true
-                                    },
+                                    .clickable {dialogDeleteBoulder = true},
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "delete",
                                 tint = Color.Gray
