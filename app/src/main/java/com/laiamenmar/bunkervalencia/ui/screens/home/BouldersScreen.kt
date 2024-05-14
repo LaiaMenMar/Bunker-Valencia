@@ -2,7 +2,6 @@ package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,9 +21,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.RocketLaunch
-import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,7 +53,6 @@ import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.Constants_Climb
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
-import com.laiamenmar.bunkervalencia.ui.theme.backgroundLight
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_1
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_2
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_3
@@ -71,6 +67,7 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 
@@ -479,7 +476,9 @@ fun BoulderList(
                 onClick = {  selectedWall = ""
                              selectedColors = allAvailableColors.toSet()
                 },
-                modifier = Modifier.padding(vertical = 4.dp).weight(1f)
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -562,6 +561,7 @@ fun ItemBoulder(
     val sdf = SimpleDateFormat("dd/MM/yyyy")
     val formattedDate = sdf.format(date)
 
+    val today = Calendar.getInstance().time
     //val boulderUpdate: BoulderModel? by homeViewModel.boulderUpdate.observeAsState()
 
     DeleteBoulderDialog(
@@ -596,8 +596,6 @@ fun ItemBoulder(
         boulderOld = boulder
     )
 
-
-
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = Modifier
@@ -605,8 +603,8 @@ fun ItemBoulder(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
                 homeViewModel.setSelectedBoulder(boulder)
-                navigation.navigate(AppScreens.BoulderDetailScreen.route) },
-      //  colors = CardDefaults.cardColors(containerColor = md_theme_light_outlineVariant),
+                navigation.navigate(AppScreens.BoulderDetailScreen.route)
+            },
         border = BorderStroke(2.dp, Color.Gray),
 
     ) {
@@ -633,7 +631,18 @@ fun ItemBoulder(
                         overflow = TextOverflow.Ellipsis,
                         color = Color.Gray
                     )
+                    if(truncateTimeFromDate(today)==truncateTimeFromDate(date)){
+                    Text(
+                        text = "Nuevo".uppercase(),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = primaryLight
+                    )}
                 }
+
+
                 Column(modifier = Modifier.weight(1f)) {
                     val buttonColors = if (boulder.color == "difficulty_6") {
                         ButtonDefaults.buttonColors(
@@ -810,4 +819,16 @@ fun getMaxGradeForColor(color: String): String {
         else -> "N/A"
     }
 }
+
+fun truncateTimeFromDate(date: Date ): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.time
+}
+
+
 

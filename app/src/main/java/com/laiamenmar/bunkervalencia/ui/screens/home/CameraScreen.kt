@@ -8,9 +8,16 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Lens
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,8 +27,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -55,13 +64,22 @@ fun CameraScreen(navigation: NavController,  storage: CloudStorageManager, homeV
     LaunchedEffect(Unit) {
         permissionState.launchPermissionRequest()
     }
-    Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
+    Scaffold(floatingActionButtonPosition = FabPosition.Center,
+        modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingActionButton(onClick = {
             val executor = ContextCompat.getMainExecutor(context)
             takePicture(cameraController, executor, navigation, storage, scope, selectedBoulder, homeViewModel)
             Toast.makeText(context, "Subiendo imagen...", Toast.LENGTH_LONG).show()
         }) {
-            Text(text = "Camara!")
+            Icon(
+                imageVector = Icons.Sharp.Lens,
+                contentDescription = "Take picture",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(1.dp)
+                    //.border(1.dp, Color.White, CircleShape)
+            )
         }
     }) {
         if (permissionState.status.isGranted) {
@@ -91,7 +109,6 @@ private fun takePicture(
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 println(outputFileResults.savedUri)
                 scope.launch{
-
                   if (selectedBoulder != null) {
                         selectedBoulder.key?.let {
                             storage.uploadFileBoulder(file.name, Uri.fromFile(file),

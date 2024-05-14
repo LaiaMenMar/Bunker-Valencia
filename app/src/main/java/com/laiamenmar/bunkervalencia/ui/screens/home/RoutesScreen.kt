@@ -12,8 +12,6 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
 @Composable()
 fun RoutesScreen(realtime: RealtimeManager, authManager: AuthManager){
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()

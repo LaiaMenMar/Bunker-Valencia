@@ -143,7 +143,7 @@ class RealtimeManager (context: Context) {
                                     user?.copy(user_id = key)
                                 }
                             }
-
+                            .sortedBy { it.display_name }
                         trySend(users).isSuccess
                         // trySend(boulders.filter { it.uid == idFilter }).isSuccess
                     }

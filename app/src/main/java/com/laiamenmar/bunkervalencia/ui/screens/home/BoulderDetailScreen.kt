@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.sharp.CameraAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,12 +45,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
+import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
+import androidx.compose.ui.layout.ContentScale.Companion.FillHeight
+import androidx.compose.ui.layout.ContentScale.Companion.Fit
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -75,8 +81,10 @@ fun BoulderDetailScreen(
     storage: CloudStorageManager,
 
     ) {
+    var showimagen by remember { mutableStateOf(false) }
     val selectedBoulder by homeViewModel.selectedBoulder.observeAsState()
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
+    var boulderImage by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -86,6 +94,8 @@ fun BoulderDetailScreen(
     val date = selectedBoulder?.let { Date(it.id) }
     val sdf = SimpleDateFormat("dd/MM/yyyy")
     val formattedDate = sdf.format(date)
+
+    val firstImageUrl = gallery.firstOrNull()
 
     LaunchedEffect(keySelect) {
         keySelect?.let { key ->
@@ -103,18 +113,24 @@ fun BoulderDetailScreen(
             navigation.popBackStack()
         })
 
-
     Scaffold(
         topBar = {
             TopBarWelcome(homeViewModel = homeViewModel, navigation = navigation)
         },
         content = { paddingValues ->
+           if (showimagen){
+               if (firstImageUrl != null) {
+                   ImagenDialog (
+                       { showimagen = false },firstImageUrl
+                   )
+               }
+           }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                if (gallery.isEmpty()) {
+                if (gallery.isEmpty() || boulderImage) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -160,14 +176,20 @@ fun BoulderDetailScreen(
                         }
                     }
                 } else {
-                    val firstImageUrl = gallery.firstOrNull()
+
                     if (firstImageUrl != null) {
-                        CoilImage(
-                            imageUrl = firstImageUrl,
-                            contentDescription = null,
-                            modifier = Modifier.weight(1f),
-                            contentScale = ContentScale.Crop
-                        )
+                        Box(modifier = Modifier.clickable { showimagen=true }
+                            .weight(1f)){
+                            CoilImage(
+                                imageUrl = firstImageUrl,
+                                contentDescription = null,
+                                modifier = Modifier,
+                                contentScale = FillBounds
+                            )
+                        }
+
+
+
                     }
                     /*LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
@@ -327,8 +349,7 @@ fun BoulderDetailScreen(
                                             scope.launch {
                                                 boulder.key?.let {
                                                     storage.deleteBoulderImage(it)
-                                                    val images = storage.getBoulderImage(it)
-                                                    homeViewModel.updateGallery(images)
+                                                    boulderImage= true
                                                 }
                                             }
                                         },
@@ -360,14 +381,14 @@ fun CoilImage(
             .data(data = imageUrl)
             .apply(block = fun ImageRequest.Builder.() {
                 crossfade(true)
-                transformations(
+               transformations(
                     RoundedCornersTransformation(
-                        topLeft = 20f,
+                     topLeft = 20f,
                         topRight = 20f,
-                        bottomLeft = 20f,
-                        bottomRight = 20f
-                    )
+                    bottomLeft = 20f,
+                      bottomRight = 20f
                 )
+               )
             })
             .build()
     )
@@ -378,4 +399,33 @@ fun CoilImage(
         contentScale = contentScale
     )
 
+}
+
+@Composable
+fun ImagenDialog(onDismissRequest: () -> Unit,  imageUrl: String) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        /*Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            CoilImage(
+                imageUrl = imageUrl,
+                contentDescription = null,
+                modifier = Modifier,
+                contentScale = Fit
+            )
+        }*/
+        Box(modifier=Modifier.fillMaxSize()){
+            CoilImage(
+                imageUrl = imageUrl,
+                contentDescription = null,
+                modifier = Modifier,
+                contentScale = Crop
+            )
+
+        }
+
+    }
 }
