@@ -43,6 +43,12 @@ class HomeViewModel(): ViewModel() {
         _currentUser.value = user
     }
 
+    fun updateUserRouterSetter(routerSetter: Boolean) {
+        val currentUser = _currentUser.value ?: return // Obtener el usuario actual
+        val updatedUser = currentUser.copy(router_setter = routerSetter) // Crear una copia del usuario actual con el nuevo valor
+        setCurrentUser(updatedUser) // Actualizar el LiveData con el usuario actualizado
+    }
+
     /* Géstion de los Dialog */
 
     /* Botón cerrar app */

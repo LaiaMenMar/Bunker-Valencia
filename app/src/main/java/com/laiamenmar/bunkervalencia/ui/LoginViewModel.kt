@@ -19,9 +19,6 @@ import com.laiamenmar.bunkervalencia.utils.AuthRes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 class LoginViewModel:ViewModel() {
-
-
-
     private val _emailInput = MutableStateFlow("")
     val emailInput: StateFlow<String> = _emailInput
 

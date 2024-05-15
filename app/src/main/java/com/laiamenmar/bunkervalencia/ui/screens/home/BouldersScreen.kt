@@ -51,6 +51,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.Constants_Climb
+import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_1
@@ -79,7 +80,7 @@ fun BouldersScreen(
     navigation: NavController
 ) {
     val scope = rememberCoroutineScope()
-
+    val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     // estado de dialogo para añadir bloque
     val dialogAddBoulder: Boolean by homeViewModel.dialogAddBoulder.observeAsState(false)
     //var dialogAddBoulder by remember { mutableStateOf(false) }
@@ -115,8 +116,10 @@ fun BouldersScreen(
                 update = false,
                 boulderOld = BoulderModel()
             )*/
+        if (currentUser != null && currentUser?.router_setter==true) {
+            FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
+        }
 
-        FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
     }
 }
 
@@ -553,6 +556,7 @@ fun ItemBoulder(
     navigation: NavController
 
 ) {
+    val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     //val dialogUpdateBoulder: Boolean by homeViewModel.dialogUpdateBoulder.observeAsState(false)
     var dialogUpdateBoulder by remember { mutableStateOf(false) }
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
@@ -721,24 +725,26 @@ fun ItemBoulder(
                     }
                 }
             }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { dialogUpdateBoulder = true },
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "edit",
-                    tint = Color.Gray
-                )
-                Icon(
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .size(24.dp)
-                        .clickable { dialogDeleteBoulder = true },
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "delete",
-                    tint = Color.Gray
-                )
+            if (currentUser != null && currentUser?.router_setter==true) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { dialogUpdateBoulder = true },
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "edit",
+                        tint = Color.Gray
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .size(24.dp)
+                            .clickable { dialogDeleteBoulder = true },
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "delete",
+                        tint = Color.Gray
+                    )
+                }
             }
         }
     }

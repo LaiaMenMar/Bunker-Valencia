@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
@@ -52,8 +51,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-
-import com.google.firebase.auth.GoogleAuthProvider
+import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
@@ -62,7 +60,6 @@ import com.laiamenmar.bunkervalencia.ui.screens.home.RoutesScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
-import com.laiamenmar.bunkervalencia.R
 
 //private lateinit var mFirebaseRemoteConfig: FirebaseRemoteConfig
 private var welcomeMessage by mutableStateOf("Hola! ")
@@ -78,19 +75,16 @@ fun HomeScreen(
     realtime: RealtimeManager
 ) {
     analytics.logScreenView(screenName = AppScreens.HomeScreen.route)
-
-
-
+    val scope = rememberCoroutineScope()
     /*Este nav Contorler es para pasar de la screen de rutas a la scrren de boulder*/
     val navController = rememberNavController()
 
     val dialogCloseApp: Boolean by homeViewModel.dialogCloseApp.observeAsState(false)
 
-
 //    initRemoteConfig()
     //  val context = LocalContext.current
 
-    val user = auth.getCurrentUser()
+
     val onLogoutConfirmed: () -> Unit = {
         auth.signOut()
         navigation.navigate(AppScreens.LoginScreen.route) {
@@ -100,26 +94,31 @@ fun HomeScreen(
         }
     }
 
-    if (user != null) {
-        val displayName = when {
-            user.isAnonymous -> ""
-            user.providerData.any { it.providerId == GoogleAuthProvider.PROVIDER_ID } -> user.displayName
-            else -> user.email?.split("@")?.get(0) ?: ""}
-
-        val email = when {
-            user.isAnonymous -> "Anónimo"
-            else -> user.email.toString()}
-
-        homeViewModel.setCurrentUser(UserModel(
-            user_id = user.uid,
-            display_name = displayName.toString(),
-            email = email,
-            urlPhoto = user.photoUrl.toString()))
+    val userlog = auth.getCurrentUser()
+    if (userlog != null) {
+        if (userlog.isAnonymous) {
+            homeViewModel.setCurrentUser(
+                UserModel(
+                    user_id = userlog.uid,
+                    display_name = "",
+                    email = "Ánonimo",
+                    urlPhoto = userlog.photoUrl.toString(),
+                )
+            )
+        } else {
+            val uid = userlog.uid
+            LaunchedEffect(uid) {
+                val userbbdd = realtime.getuser(uid)
+                if (userbbdd != null) {
+                    homeViewModel.setCurrentUser(userbbdd)
+                }
+            }
+        }
     }
 
     Scaffold(
         topBar = {
-                TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
+            TopBarWelcome(homeViewModel = homeViewModel, navigation = navigation)
         },
 
         bottomBar = {
@@ -150,7 +149,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController ) {
+fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController) {
     val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     TopAppBar(
         title = {
@@ -173,7 +172,7 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController ) {
                     )
 
                 } else {
-                   Image(
+                    Image(
                         painter = painterResource(R.drawable.profile),
                         contentDescription = "Foto de perfil por defecto",
                         modifier = Modifier
@@ -187,8 +186,8 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController ) {
 
                 Column {
                     Text(
-                       text = if (!currentUser?.display_name.isNullOrEmpty()) welcomeMessage + currentUser?.display_name else welcomeMessage,
-                       fontSize = 20.sp,
+                        text = if (!currentUser?.display_name.isNullOrEmpty()) welcomeMessage + currentUser?.display_name else welcomeMessage,
+                        fontSize = 20.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -213,21 +212,24 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController ) {
             ) {
                 Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión")
             }
-            IconButton(
-                onClick = {
-                    navigation.navigate(AppScreens.RouteSetterScreen.route)
-                    //analytics.logButtonClicked("Click: No tienes una cuenta? Regístrate")
+
+            if (currentUser != null && currentUser?.display_name.toString() == "admin") {
+                IconButton(
+                    onClick = {
+                        navigation.navigate(AppScreens.RouteSetterScreen.route)
+                    }
+                ) {
+                    Icon(Icons.Filled.Person, contentDescription = "Perfil")
                 }
-            ) {
-                Icon(Icons.Filled.Person, contentDescription = "Perfil")
             }
-            IconButton(
-                onClick = {
-                  //  navigation.navigateUp()
-                }
-            ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Atras")
-            }
+
+            /*    IconButton(
+                    onClick = {
+                      //  navigation.navigateUp()
+                    }
+                ) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Atras")
+                }*/
         }
     )
 }

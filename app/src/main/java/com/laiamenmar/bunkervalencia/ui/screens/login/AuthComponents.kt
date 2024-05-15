@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -46,10 +45,22 @@ import com.laiamenmar.bunkervalencia.R
 @Composable
 fun HeaderImage(modifier: Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.logo),
+        painter = painterResource(id = R.drawable.logo_bunker),
         contentDescription = "logo del bunker",
         modifier = modifier.size(300.dp)
     )
+    Row (modifier= modifier.padding(8.dp)) {
+        Text(
+            text = "Powered by ",
+            style = TextStyle(color = Color.Gray),
+            modifier = modifier.padding(top=4.dp)
+        )
+       Image(
+            painter = painterResource(id = R.drawable.logo_climbing),
+            contentDescription = "logo climbing Explore",
+            modifier = modifier.size(50.dp),
+        )
+    }
 }
 
 @Composable

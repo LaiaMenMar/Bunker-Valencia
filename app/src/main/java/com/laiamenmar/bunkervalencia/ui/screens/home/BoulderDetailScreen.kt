@@ -60,6 +60,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
+import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
 import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
@@ -81,6 +82,7 @@ fun BoulderDetailScreen(
     storage: CloudStorageManager,
 
     ) {
+    val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
     var showimagen by remember { mutableStateOf(false) }
     val selectedBoulder by homeViewModel.selectedBoulder.observeAsState()
     var dialogDeleteBoulder by remember { mutableStateOf(false) }
@@ -327,36 +329,37 @@ fun BoulderDetailScreen(
                                 }
                             }
                         }
-
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)) {
-                            Icon(
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .size(24.dp)
-                                    .clickable {dialogDeleteBoulder = true},
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "delete",
-                                tint = Color.Gray
-                            )
-                            if (gallery.isNotEmpty()) {
+                        if (currentUser != null && currentUser?.router_setter==true) {
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)) {
                                 Icon(
                                     modifier = Modifier
                                         .padding(start = 16.dp)
                                         .size(24.dp)
-                                        .clickable {
-                                            scope.launch {
-                                                boulder.key?.let {
-                                                    storage.deleteBoulderImage(it)
-                                                    boulderImage= true
-                                                }
-                                            }
-                                        },
-                                    imageVector = Icons.Outlined.Cameraswitch,
-                                    contentDescription = "delete photo",
+                                        .clickable {dialogDeleteBoulder = true},
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "delete",
                                     tint = Color.Gray
                                 )
+                                if (gallery.isNotEmpty()) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .padding(start = 16.dp)
+                                            .size(24.dp)
+                                            .clickable {
+                                                scope.launch {
+                                                    boulder.key?.let {
+                                                        storage.deleteBoulderImage(it)
+                                                        boulderImage= true
+                                                    }
+                                                }
+                                            },
+                                        imageVector = Icons.Outlined.Cameraswitch,
+                                        contentDescription = "delete photo",
+                                        tint = Color.Gray
+                                    )
+                                }
                             }
                         }
                     }

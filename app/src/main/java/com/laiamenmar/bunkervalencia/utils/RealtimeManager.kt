@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.laiamenmar.bunkervalencia.model.BoulderModel
 import com.laiamenmar.bunkervalencia.model.UserModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -39,6 +40,27 @@ class RealtimeManager (context: Context) {
                 }
         }
     }
+
+    suspend fun getuser (userId: String): UserModel? {
+        val userRef = usersReference.child(userId)
+        val completableDeferred = CompletableDeferred<UserModel?>()
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(UserModel::class.java)
+                completableDeferred.complete(user)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejar el error si la lectura se cancela
+                completableDeferred.complete(null) // Completar con valor nulo en caso de error
+            }
+        })
+
+        return completableDeferred.await() // Esperar y devolver el resultado obtenido de la base de datos
+    }
+
+
 
     suspend fun getUserNameById(userId: String): String? {
         return try {
@@ -157,3 +179,4 @@ class RealtimeManager (context: Context) {
         return flow
     }
 }
+
