@@ -1,3 +1,14 @@
+/**
+ * AppNavigation.kt: Este archivo contiene la función `AppNavigation`, que define la estructura de
+ * navegación de la aplicación utilizando Jetpack Compose y el componente NavHost.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la estructura de navegación de la aplicación, estableciendo las pantallas
+ * y sus rutas asociadas.
+ * También inicializa los gestores de análisis, autenticación y almacenamiento en la nube
+ * necesarios para la navegación y la lógica de la aplicación.
+ * Fecha de creación: 2024-01-10
+ */
 package com.laiamenmar.bunkervalencia.ui.navigation
 
 import android.content.Context
@@ -8,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.LoginViewModel
-import com.laiamenmar.bunkervalencia.ui.screens.HomeScreen
+import com.laiamenmar.bunkervalencia.ui.screens.home.HomeScreen
 import com.laiamenmar.bunkervalencia.ui.screens.Screen
 import com.laiamenmar.bunkervalencia.ui.screens.home.BoulderDetailScreen
 import com.laiamenmar.bunkervalencia.ui.screens.home.CameraScreen
@@ -22,7 +33,13 @@ import com.laiamenmar.bunkervalencia.utils.CloudStorageManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
 /**
- * Se encarga de la navegación entre pantallas
+ * AppNavigation: Esta función define la navegación principal de la aplicación utilizando Jetpack Compose y Navigation.
+ * Incluye las pantallas de inicio de sesión, registro, restablecimiento de contraseña y la pantalla principal de la aplicación.
+ *
+ * @param context El contexto de la aplicación.
+ * @param navController El controlador de navegación que gestiona la navegación entre las pantallas.
+ * @param loginViewModel ViewModel para la pantalla de inicio de sesión.
+ * @param homeViewModel ViewModel para la pantalla principal de la aplicación.
  */
 @Composable
 fun AppNavigation(
@@ -33,7 +50,7 @@ fun AppNavigation(
 ) {
 
     val analytics = AnalyticsManager(context)
-    val realtime = RealtimeManager(context)
+    val realtime = RealtimeManager()
     val authManager = AuthManager(context, realtime)
     val storage = CloudStorageManager(context, realtime)
 

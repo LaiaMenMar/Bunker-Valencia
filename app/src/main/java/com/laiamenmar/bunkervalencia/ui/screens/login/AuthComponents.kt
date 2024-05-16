@@ -1,3 +1,13 @@
+/**
+ * AuthComponents.kt: Este archivo contiene la implementación de componentes reutilizables
+ * relacionados con la autenticación en la aplicación.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define componentes comunes utilizados en las pantallas de autenticación, como campos de
+ * entrada de correo y contraseña, botones de acción y botones de inicio de sesión social.
+ * Fecha de creación: 2024-02-07
+ */
+
 package com.laiamenmar.bunkervalencia.ui.screens.login
 
 import androidx.compose.foundation.BorderStroke
@@ -20,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +49,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.laiamenmar.bunkervalencia.R
 
-
+/**
+ * HeaderImage: Este componente representa de encabezado utilizado en diferentes partes de la
+ * aplicación siendo la imagen del logotipo del bunker con el logotipo de climbingExplore.
+ *
+ * @param modifier El modificador para aplicar al componente.
+ */
 
 @Composable
 fun HeaderImage(modifier: Modifier) {
@@ -49,13 +63,13 @@ fun HeaderImage(modifier: Modifier) {
         contentDescription = "logo del bunker",
         modifier = modifier.size(300.dp)
     )
-    Row (modifier= modifier.padding(8.dp)) {
+    Row(modifier = modifier.padding(8.dp)) {
         Text(
             text = "Powered by ",
             style = TextStyle(color = Color.Gray),
-            modifier = modifier.padding(top=4.dp)
+            modifier = modifier.padding(top = 4.dp)
         )
-       Image(
+        Image(
             painter = painterResource(id = R.drawable.logo_climbing),
             contentDescription = "logo climbing Explore",
             modifier = modifier.size(50.dp),
@@ -63,6 +77,15 @@ fun HeaderImage(modifier: Modifier) {
     }
 }
 
+/**
+ * EmailField: Este componente representa representa un campo de entrada de correo electrónico.
+ *
+ * @param value El valor actual del campo de entrada.
+ * @param onValueChanged La función de callback que se llama cuando cambia el valor del
+ * campo de entrada.
+ * @param modifier El modificador para aplicar al componente.
+ *
+ */
 @Composable
 fun EmailField(
     value: String,
@@ -77,22 +100,25 @@ fun EmailField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         singleLine = true,
         maxLines = 1,
-        colors = TextFieldDefaults.colors(
-
-        ),
-
         label = { Text("Email") },
     )
 }
 
+/**
+ * PasswordField: Este componente representa un campo de entrada de contraseña.
+ *
+ * @param value El valor actual del campo de entrada.
+ * @param onValueChanged La función de callback que se llama cuando cambia el valor del
+ * campo de entrada.
+ * @param modifier El modificador para aplicar al componente.
+ *
+ */
 @Composable
 fun PasswordField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier
 ) {
-    // var passwordVisibility by remember { mutableStateOf(false) }
-
     TextField(
         value = value,
         onValueChange = onValueChange,
@@ -102,21 +128,17 @@ fun PasswordField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
         maxLines = 1,
-        label = { Text("Contraseña") },
-        /*  trailingIcon = {
-              val image = if (passwordVisibility) {
-
-              } else {
-
-              }
-              IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                  Image(
-                      painter = painterResource(id = image), contentDescription = "show password"
-                  )
-              }
-          }*/
+        label = { Text("Contraseña") }
     )
 }
+
+/**
+ * ActionButton: Este componente representa un botón de acción utilizado en la interfaz de usuario.
+ *
+ * @param onClick La acción a realizar cuando se hace clic en el botón.
+ * @param buttonText El texto que se muestra en el botón.
+ * @param loginEnable Un indicador booleano que especifica si el botón está habilitado o no.
+ */
 
 @Composable
 fun ActionButton(
@@ -129,14 +151,6 @@ fun ActionButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
-      //  colors = ButtonDefaults.buttonColors(
-        //    containerColor = md_theme_light_primary,
-        //    disabledContainerColor = md_theme_light_primaryContainer,
-          //  contentColor= Color.White,
-           // disabledContentColor = Color.White),
-
-
-
         enabled = loginEnable
     )
     {
@@ -147,6 +161,15 @@ fun ActionButton(
     }
 }
 
+/**
+ * SocialMediaButton: Este componente representa un botón de inicio de sesión a través
+ * de redes sociales o de manera anónima.
+ *
+ * @param onClick La acción a realizar cuando se hace clic en el botón.
+ * @param buttonText El texto que se muestra en el botón.
+ * @param icon El recurso de imagen que se muestra junto al texto del botón.
+ * @param color El color de fondo del botón.
+ */
 @Composable
 fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color) {
     var click by remember { mutableStateOf(false) }
@@ -183,6 +206,14 @@ fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color
     }
 }
 
+/**
+ * ClickableTextButton:Este componente representa un botón de texto que es clickable para navegar
+ * entre pantallas en la auténtificación.
+ *
+ * @param text El texto que se muestra en el botón.
+ * @param onClick La acción a realizar cuando se hace clic en el botón.
+ * @param modifier Modificador para personalizar el aspecto y diseño del botón.
+ */
 @Composable
 fun ClickableTextButton(
     text: String,
@@ -205,6 +236,13 @@ fun ClickableTextButton(
     )
 }
 
+/**
+ * TitleLogin: Este componente muestra un título en negrita con un tamaño de fuente
+ * y espaciado específicos.
+ *
+ * @param title El texto del título a mostrar.
+ * @param modifier Modificador para personalizar el aspecto y diseño del título.
+ */
 @Composable
 fun TitleLogin(title: String, modifier: Modifier) {
     Text(

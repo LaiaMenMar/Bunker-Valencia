@@ -1,5 +1,14 @@
-package com.laiamenmar.bunkervalencia.ui.screens
+/**
+ * HomeScreen.kt: Este archivo contiene la implementación de la pantalla de inicio de la aplicación,
+ * que muestra la vista principal del usuario autenticado.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la pantalla de inicio, que proporciona acceso a las funcionalidades principales
+ * de la aplicación después de que el usuario ha iniciado sesión.
+ * Fecha de creación: 2024/04/11
+ */
 
+package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -55,17 +64,22 @@ import com.laiamenmar.bunkervalencia.R
 import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
-import com.laiamenmar.bunkervalencia.ui.screens.home.BouldersScreen
-import com.laiamenmar.bunkervalencia.ui.screens.home.RoutesScreen
 import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 
-//private lateinit var mFirebaseRemoteConfig: FirebaseRemoteConfig
-private var welcomeMessage by mutableStateOf("Hola! ")
 
-//private var isButtonVisible by mutableStateOf(true)
-
+/**
+ * Función componible para renderizar la pantalla de inicio de la aplicación, que muestra
+ * la vista principal del usuario autenticado.Se guardan los datos en el viewmodel del
+ * usuario loggeado. Se declara la variable para poder salir de la aplicacion.
+ *
+ * @param analytics Instancia de AnalyticsManager para registrar eventos de análisis.
+ * @param auth Instancia de AuthManager para manejar operaciones de autenticación.
+ * @param navigation NavController para navegar entre componibles.
+ * @param homeViewModel Instancia de HomeViewModel que contiene la lógica para la pantalla de inicio.
+ * @param realtime Instancia de RealtimeManager para interactuar con la base de datos en tiempo real.
+ */
 @Composable
 fun HomeScreen(
     analytics: AnalyticsManager,
@@ -75,16 +89,9 @@ fun HomeScreen(
     realtime: RealtimeManager
 ) {
     analytics.logScreenView(screenName = AppScreens.HomeScreen.route)
-    val scope = rememberCoroutineScope()
-    /*Este nav Contorler es para pasar de la screen de rutas a la scrren de boulder*/
+
     val navController = rememberNavController()
-
     val dialogCloseApp: Boolean by homeViewModel.dialogCloseApp.observeAsState(false)
-
-//    initRemoteConfig()
-    //  val context = LocalContext.current
-
-
     val onLogoutConfirmed: () -> Unit = {
         auth.signOut()
         navigation.navigate(AppScreens.LoginScreen.route) {
@@ -94,23 +101,23 @@ fun HomeScreen(
         }
     }
 
-    val userlog = auth.getCurrentUser()
-    if (userlog != null) {
-        if (userlog.isAnonymous) {
+    val user = auth.getCurrentUser()
+    if (user != null) {
+        if (user.isAnonymous) {
             homeViewModel.setCurrentUser(
                 UserModel(
-                    user_id = userlog.uid,
+                    user_id = user.uid,
                     display_name = "",
                     email = "Ánonimo",
-                    urlPhoto = userlog.photoUrl.toString(),
+                    urlPhoto = user.photoUrl.toString(),
                 )
             )
         } else {
-            val uid = userlog.uid
+            val uid = user.uid
             LaunchedEffect(uid) {
-                val userbbdd = realtime.getuser(uid)
-                if (userbbdd != null) {
-                    homeViewModel.setCurrentUser(userbbdd)
+                val userofbbdd = realtime.getuser(uid)
+                if (userofbbdd != null) {
+                    homeViewModel.setCurrentUser(userofbbdd)
                 }
             }
         }
@@ -124,11 +131,8 @@ fun HomeScreen(
         bottomBar = {
             BottomBar(navController = navController)
         },
-
-
         ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
-            /* Controla el dialogo para cerrar la aplicación */
             if (dialogCloseApp) {
                 LogoutDialog(onConfirmLogout = {
                     onLogoutConfirmed()
@@ -147,10 +151,24 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Función componible para mostrar la barra de la parte superior de la aplicación en la
+ * pantalla principal,
+ * dando la bienvenida al usuario y proporcionando opciones como cerrar sesión o acceder
+ * a la pantalla para elegir los equipadores si eres el administrador.
+ *
+ * @param homeViewModel Instancia de HomeViewModel que contiene los datos del usuario actual.
+ * @param navigation NavController para navegar entre componibles.
+ */
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController) {
+    val welcomeMessage by mutableStateOf("Hola! ")
     val currentUser: UserModel? by homeViewModel.currentUser.observeAsState()
+
     TopAppBar(
         title = {
             Row(
@@ -170,7 +188,6 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController) {
                             .clip(CircleShape)
                             .size(40.dp)
                     )
-
                 } else {
                     Image(
                         painter = painterResource(R.drawable.profile),
@@ -186,13 +203,15 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController) {
 
                 Column {
                     Text(
-                        text = if (!currentUser?.display_name.isNullOrEmpty()) welcomeMessage + currentUser?.display_name else welcomeMessage,
+                        text = if (!currentUser?.display_name.isNullOrEmpty()) welcomeMessage +
+                                currentUser?.display_name else welcomeMessage,
                         fontSize = 20.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (currentUser?.email.toString() != "null") "${currentUser?.email}" else "Anónimo",
+                        text = if (currentUser?.email.toString() != "null") "${currentUser?.email}"
+                        else "Anónimo",
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -222,18 +241,16 @@ fun TopBarWelcome(homeViewModel: HomeViewModel, navigation: NavController) {
                     Icon(Icons.Filled.Person, contentDescription = "Perfil")
                 }
             }
-
-            /*    IconButton(
-                    onClick = {
-                      //  navigation.navigateUp()
-                    }
-                ) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Atras")
-                }*/
         }
     )
 }
 
+/**
+ * Función componible para mostrar la barra de navegación en la parte inferior de la pantalla,
+ * que permite al usuario cambiar entre diferentes secciones de la aplicación.
+ *
+ * @param navController NavController para manejar la navegación entre las diferentes secciones.
+ */
 @Composable
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
@@ -255,6 +272,15 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
+/**
+ * Función componible para agregar un elemento a la barra de navegación en la parte inferior
+ * de la pantalla.
+ *
+ * @param screens Objeto BottomNavScreen que representa la pantalla asociada al elemento
+ * de navegación.
+ * @param currentDestination Destino actual de la navegación.
+ * @param navController NavController para manejar la navegación entre las diferentes secciones.
+ */
 @Composable
 fun RowScope.AddItem(
     screens: BottomNavScreen,
@@ -276,6 +302,14 @@ fun RowScope.AddItem(
     )
 }
 
+/**
+ * Sealed class que define las diferentes pantallas asociadas a los elementos de la barra de
+ * navegación inferior.
+ *
+ * @property path Ruta asociada a la pantalla.
+ * @property title Título de la pantalla.
+ * @property icon Icono asociado a la pantalla.
+ */
 sealed class BottomNavScreen(val path: String, val title: String, val icon: ImageVector) {
     object Rutas : BottomNavScreen(
         path = "rutas",
@@ -288,12 +322,20 @@ sealed class BottomNavScreen(val path: String, val title: String, val icon: Imag
         title = "Bloques",
         icon = Icons.Default.MoreVert
     )
-    /* object Photos : BottomNavScreen(
-         path = "photos",
-         title = "Photos",
-         icon = Icons.Default.Face
-     )*/
 }
+
+
+/**
+ * Función componible que representa el gráfico de navegación para la barra de navegación inferior.
+ * Esta función define las diferentes pantallas y sus rutas asociadas.
+ *
+ * @param navController Controlador de navegación de Compose.
+ * @param authManager Instancia de AuthManager para manejar operaciones de autenticación.
+ * @param homeViewModel Instancia de HomeViewModel que contiene la lógica relacionada
+ * con la pantalla principal.
+ * @param realtime Instancia de RealtimeManager para manejar operaciones en tiempo real.
+ * @param navigation NavController para navegar entre componibles.
+ */
 
 @Composable
 fun BottomNavGraph(
@@ -304,8 +346,6 @@ fun BottomNavGraph(
     navigation: NavController
 ) {
 
-    // val firestore = FirestoreManager(context)
-    // val storage = CloudStorageManager(context)
     NavHost(navController = navController, startDestination = BottomNavScreen.Bloques.path) {
         composable(route = BottomNavScreen.Bloques.path) {
             BouldersScreen(
@@ -319,15 +359,15 @@ fun BottomNavGraph(
         composable(route = BottomNavScreen.Rutas.path) {
             RoutesScreen(realtime = realtime, authManager = authManager)
         }
-
-
-        /*
-       composable(route = BottomNavScreen.Photos.route) {
-            CloudStorageScreen(storage = storage)
-        }*/
     }
 }
 
+/**
+ * Función componible que muestra un diálogo de confirmación para cerrar sesión.
+ *
+ * @param onConfirmLogout Acción a realizar cuando se confirma el cierre de sesión.
+ * @param onDismiss Acción a realizar cuando se descarta el diálogo.
+ */
 @Composable
 fun LogoutDialog(onConfirmLogout: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(

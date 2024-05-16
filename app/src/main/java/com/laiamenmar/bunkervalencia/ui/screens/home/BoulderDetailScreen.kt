@@ -19,14 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Cameraswitch
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.sharp.CameraAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,8 +45,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
-import androidx.compose.ui.layout.ContentScale.Companion.FillHeight
-import androidx.compose.ui.layout.ContentScale.Companion.Fit
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +59,6 @@ import coil.transform.RoundedCornersTransformation
 import com.laiamenmar.bunkervalencia.model.UserModel
 import com.laiamenmar.bunkervalencia.ui.HomeViewModel
 import com.laiamenmar.bunkervalencia.ui.navigation.AppScreens
-import com.laiamenmar.bunkervalencia.ui.screens.TopBarWelcome
 import com.laiamenmar.bunkervalencia.ui.theme.onPrimaryContainerLight
 import com.laiamenmar.bunkervalencia.ui.theme.surfaceVariantLight
 import com.laiamenmar.bunkervalencia.ui.theme.tertiaryLight
@@ -98,6 +93,7 @@ fun BoulderDetailScreen(
     val formattedDate = sdf.format(date)
 
     val firstImageUrl = gallery.firstOrNull()
+
 
     LaunchedEffect(keySelect) {
         keySelect?.let { key ->
@@ -152,8 +148,9 @@ fun BoulderDetailScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    navigation.navigate(AppScreens.CameraScreen.route)
-                                },
+                                    if(currentUser != null && currentUser?.router_setter==true) {
+                                        navigation.navigate(AppScreens.CameraScreen.route)
+                                    }},
                                 modifier = Modifier,
                                 content = {
                                     Icon(

@@ -1,17 +1,24 @@
+/**
+ * LoginScreen.kt: Este archivo contiene la implementación de la pantalla de inicio de sesión
+ * de la aplicación.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la pantalla de inicio de sesión, que permite a los usuarios
+ * autenticarse utilizando diferentes métodos.
+ * Fecha de creación: 2024-01-10
+ */
+
 package com.laiamenmar.bunkervalencia.ui.screens.login
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -32,7 +38,15 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch
 
-
+/**
+ * Función componible para renderizar la pantalla de inicio de sesión de la aplicación.
+ *
+ * @param authManager Instancia de AuthManager para manejar operaciones de autenticación.
+ * @param analytics Instancia de AnalyticsManager para registrar eventos de análisis.
+ * @param navigation NavController para navegar entre componibles.
+ * @param loginViewModel Instancia de LoginViewModel que contiene la lógica para la pantalla
+ * de inicio de sesión.
+ */
 @Composable
 fun LoginScreen(
     authManager: AuthManager,

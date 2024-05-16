@@ -1,8 +1,13 @@
+/**
+ * RegisterScreen.kt: Este archivo contiene la implementación de la pantalla de registro
+ * de la aplicación.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la pantalla de registro, que permite a los usuarios crear una cuenta nueva.
+ * Fecha de creación: 2024-01-12
+ */
 package com.laiamenmar.bunkervalencia.ui.screens.login
 
-
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,22 +28,27 @@ import com.laiamenmar.bunkervalencia.utils.AnalyticsManager
 import com.laiamenmar.bunkervalencia.utils.AuthManager
 import kotlinx.coroutines.launch
 
+/**
+ * Función componible para renderizar la pantalla de registro de la aplicación.
+ *
+ * @param authManager Instancia de AuthManager para manejar operaciones de autenticación.
+ * @param analytics Instancia de AnalyticsManager para registrar eventos de análisis.
+ * @param navigation NavController para navegar entre componibles.
+ * @param loginViewModel Instancia de LoginViewModel que contiene la lógica para la pantalla
+ * de inicio de sesión. */
+
 @Composable
 fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, navigation: NavController, loginViewModel: LoginViewModel) {
     val scope = rememberCoroutineScope()
 
     val emailInput by loginViewModel.emailInput.collectAsState()
     val passwordInput by loginViewModel.passwordInput.collectAsState()
-
-
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-
-
     ) {
         HeaderImage(
             Modifier
@@ -69,9 +79,10 @@ fun RegisterScreen(authManager: AuthManager, analytics: AnalyticsManager, naviga
                     loginViewModel.signUp(emailInput, passwordInput, authManager, analytics, context, navigation)
                 }
             },
-            buttonText = "Registrese",
+            buttonText = "registrese",
             loginEnable = true
         )
+
         ClickableTextButton(
             text = "¿Ya tienes cuenta? Inicia Sesión",
             onClick = {
