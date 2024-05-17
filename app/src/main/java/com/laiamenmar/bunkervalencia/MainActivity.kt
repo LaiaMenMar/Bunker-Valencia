@@ -2,7 +2,8 @@
  *MainActivity.kt: Esta clase representa la actividad principal de la aplicación.
  *
  * Autor: Laia Méndez Martínez
- * Función: Inicializa Firebase Analytics y establece el contenido de la aplicación utilizando Jetpack Compose, incluyendo la configuración del tema y la navegación.
+ * Función: Inicializa Firebase Analytics y establece el contenido de la aplicación utilizando
+ * Jetpack Compose, incluyendo la configuración del tema y la navegación.
  * Fecha de creación: 2024-01-10
  */
 package com.laiamenmar.bunkervalencia

@@ -5,7 +5,7 @@
  * Autor: Laia Méndez Martínez
  * Función: Define la pantalla de inicio, que proporciona acceso a las funcionalidades principales
  * de la aplicación después de que el usuario ha iniciado sesión.
- * Fecha de creación: 2024/04/11
+ * Fecha de creación: 2024/04/05
  */
 
 package com.laiamenmar.bunkervalencia.ui.screens.home
@@ -131,7 +131,7 @@ fun HomeScreen(
         bottomBar = {
             BottomBar(navController = navController)
         },
-        ) { contentPadding ->
+    ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             if (dialogCloseApp) {
                 LogoutDialog(onConfirmLogout = {
@@ -160,7 +160,6 @@ fun HomeScreen(
  * @param homeViewModel Instancia de HomeViewModel que contiene los datos del usuario actual.
  * @param navigation NavController para navegar entre componibles.
  */
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -350,14 +349,16 @@ fun BottomNavGraph(
         composable(route = BottomNavScreen.Bloques.path) {
             BouldersScreen(
                 realtime = realtime,
-                authManager = authManager,
                 homeViewModel = homeViewModel,
                 navigation = navigation
             )
         }
 
         composable(route = BottomNavScreen.Rutas.path) {
-            RoutesScreen(realtime = realtime, authManager = authManager)
+            RoutesScreen(
+                realtime = realtime,
+                authManager = authManager
+            )
         }
     }
 }

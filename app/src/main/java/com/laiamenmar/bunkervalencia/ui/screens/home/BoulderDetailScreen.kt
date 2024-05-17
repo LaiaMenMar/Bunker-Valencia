@@ -1,3 +1,12 @@
+/**
+ * BoulderDetailScreen.kt: Este archivo contiene la implementación de la pantalla de detalle de
+ * un bloque de escalada, que muestra su información detallada, incluyendo su imagen, notas,
+ * fecha de creación, grado de dificultad, etc.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la estructura y la lógica de la pantalla de detalle de un bloque de escalada.
+ * Fecha de creación: 2024/04/22
+ */
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
@@ -68,7 +77,16 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
+/**
+ * Función componible para mostrar la pantalla de detalle de un problema de boulder.
+ *
+ * @param realtime Instancia de RealtimeManager para realizar operaciones de datos en tiempo real.
+ * @param homeViewModel ViewModel de la pantalla de inicio para acceder a los datos del usuario
+ * actual y del problema de boulder seleccionado.
+ * @param navigation NavController para la navegación dentro de la aplicación.
+ * @param storage Instancia de CloudStorageManager para cargar y eliminar imágenes asociadas
+ * a un problema de boulder.
+ */
 @Composable
 fun BoulderDetailScreen(
     realtime: RealtimeManager,
@@ -217,7 +235,6 @@ fun BoulderDetailScreen(
                             .weight(1f)
                             .background(surfaceVariantLight)
                     ) {
-                        //    TitleScreen("Búlder", Modifier.align(Alignment.CenterHorizontally))
                         Text(
                             text = boulder.note,
                             fontSize = 18.sp,
@@ -244,6 +261,15 @@ fun BoulderDetailScreen(
                                     text = formattedDate,
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 20.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Equipado por " + boulder.name_routeSeter,
+                                    //fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     color = Color.Black
@@ -366,7 +392,14 @@ fun BoulderDetailScreen(
     )
 }
 
-
+/**
+ * Función componible para mostrar una imagen utilizando Coil con esquinas redondeadas.
+ *
+ * @param imageUrl URL de la imagen que se mostrará.
+ * @param contentDescription Descripción del contenido para accesibilidad.
+ * @param modifier Modificador para estilizar y personalizar el diseño.
+ * @param contentScale Tipo de escala para el contenido de la imagen.
+ */
 @Composable
 fun CoilImage(
     imageUrl: String,
@@ -398,25 +431,17 @@ fun CoilImage(
         modifier = modifier.padding(6.dp),
         contentScale = contentScale
     )
-
 }
 
+/**
+ * Función componible para mostrar un diálogo que contiene una imagen.
+ *
+ * @param onDismissRequest Función de devolución de llamada invocada cuando se cierra el diálogo.
+ * @param imageUrl URL de la imagen que se mostrará.
+ */
 @Composable
 fun ImagenDialog(onDismissRequest: () -> Unit,  imageUrl: String) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
-        /*Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            CoilImage(
-                imageUrl = imageUrl,
-                contentDescription = null,
-                modifier = Modifier,
-                contentScale = Fit
-            )
-        }*/
         Box(modifier=Modifier.fillMaxSize()){
             CoilImage(
                 imageUrl = imageUrl,

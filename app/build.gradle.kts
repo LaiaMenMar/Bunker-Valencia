@@ -5,6 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
 
+    id("org.jetbrains.dokka") version "1.9.20"
+
 
    //   kotlin("kapt")
     // id("com.google.dagger.hilt.android")

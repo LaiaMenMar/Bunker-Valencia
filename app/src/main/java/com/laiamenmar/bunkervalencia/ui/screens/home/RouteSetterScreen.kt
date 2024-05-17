@@ -1,3 +1,13 @@
+/**
+ * RouteSetterScreen.kt: Este archivo contiene la lista de usuarios loggeados ordenados
+ * alfabeticamente, que permite al administrador dar permisos de equipador para poder modificar
+ * las rutas de la aplicación.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la pantalla de la lista de usuarios, que permite al administrador realizar
+ * modificaciones.
+ * Fecha de creación: 2024/04/22
+ */
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.Image
@@ -42,15 +52,22 @@ import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * RouteSetterScreen.kt: Esta función compone la pantalla de ajuste de rutas, que permite al
+ * adminitradoe dar  permisos de equipador a los usuarios
+ *
+ * @param realtime Instancia de RealtimeManager para interactuar con la base de datos en tiempo real.
+ * @param homeViewModel El ViewModel que maneja la lógica de la pantalla de inicio.
+ * @param navigation El controlador de navegación para manejar la navegación entre pantallas.
+ */
 @Composable
-fun RouteSetterScreen (
-    realtime: RealtimeManager,
-    homeViewModel: HomeViewModel, navigation: NavController
+fun RouteSetterScreen(
+    realtime: RealtimeManager, homeViewModel: HomeViewModel, navigation: NavController
 ) {
     val scope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            TopBarWelcome(homeViewModel = homeViewModel, navigation= navigation )
+            TopBarWelcome(homeViewModel = homeViewModel, navigation = navigation)
         },
         content = { paddingValues ->
             Column(
@@ -66,6 +83,12 @@ fun RouteSetterScreen (
     )
 }
 
+/**
+ * Función componible para mostrar la lista de usuarios a partir del flujo de usuarios en tiempo real
+ *
+ * @param realtime Instancia de RealtimeManager para interactuar con la base de datos en tiempo real.
+ * @param scope El ámbito de coroutine utilizado para lanzar corutinas para operaciones asincrónicas.
+ */
 @Composable
 fun UserList(realtime: RealtimeManager, scope: CoroutineScope) {
     val usersListFlow by realtime.getUsersFlow().collectAsState(emptyList())
@@ -77,8 +100,17 @@ fun UserList(realtime: RealtimeManager, scope: CoroutineScope) {
     }
 }
 
+/**
+ * Función componible de un elemento de la lista de usuarios con la información proporcionada
+ * por el usuario, incluida su imagen de perfil si está disponible, su nombre de usuario
+ * y un checkbox para habilitar o deshabilitar sus permisos de equipador.
+ *
+ * @param user El modelo de datos del usuario que contiene la información del usuario.
+ * @param scope El ámbito de coroutine utilizado para lanzar corutinas para operaciones asincrónicas.
+ * @param realtime  Instancia de RealtimeManager para interactuar con la base de datos en tiempo real.
+ */
 @Composable
-fun UserListItem(user: UserModel, scope: CoroutineScope, realtime: RealtimeManager, ) {
+fun UserListItem(user: UserModel, scope: CoroutineScope, realtime: RealtimeManager) {
     var isChecked by remember { mutableStateOf(user.router_setter) }
 
     Row(
@@ -113,22 +145,28 @@ fun UserListItem(user: UserModel, scope: CoroutineScope, realtime: RealtimeManag
             )
         }
 
-        Text(text = user.display_name,
-          //  color = md_theme_light_onPrimaryContainer,
-            modifier = Modifier.weight(1f).padding(start= 8.dp))
+        Text(
+            text = user.display_name,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp)
+        )
 
         Checkbox(
             checked = isChecked,
-            onCheckedChange = { isChecked= it
+            onCheckedChange = {
+                isChecked = it
                 scope.launch {
                     realtime.updateUserRouterSetter(user.user_id, it)
-                }},
+                }
+            },
 
             modifier = Modifier.padding(start = 8.dp),
-           colors = CheckboxDefaults.colors(
+            colors = CheckboxDefaults.colors(
                 checkedColor = secondaryLight,
                 uncheckedColor = primaryContainerLight
-            ))
+            )
+        )
     }
 }
 

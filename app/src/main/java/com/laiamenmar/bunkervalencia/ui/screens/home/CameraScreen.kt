@@ -1,3 +1,12 @@
+/**
+ * CameraScreen.kt: Este archivo contiene la implementación de la pantalla de la cámara,
+ * que permite a los usuarios capturar imágenes para asociarlas a un bloque de escalada.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la funcionalidad para tomar fotografías con la cámara del dispositivo
+ * y subirlas al almacenamiento en la nube para asociarlas con un bloque de escalada.
+ * Fecha de creación: 2024/05/09
+ */
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import android.Manifest
@@ -8,11 +17,9 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Lens
 import androidx.compose.material3.FabPosition
@@ -48,7 +55,15 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.Executor
 
-
+/**
+ * CameraScreen.kt: Este archivo contiene la implementación de la pantalla de la cámara,
+ * que permite a los usuarios capturar imágenes para asociarlas a un bloque.
+  *
+ * @param navigation NavController para la navegación dentro de la aplicación.
+ * @param storage Instancia del gestor de almacenamiento en la nube para subir las imágenes capturadas.
+ * @param homeViewModel ViewModel de la pantalla de inicio para acceder a los
+ * datos del bloque de escalada seleccionado.
+ */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable()
 fun CameraScreen(navigation: NavController,  storage: CloudStorageManager, homeViewModel: HomeViewModel) {
@@ -78,7 +93,6 @@ fun CameraScreen(navigation: NavController,  storage: CloudStorageManager, homeV
                 modifier = Modifier
                     .size(100.dp)
                     .padding(1.dp)
-                    //.border(1.dp, Color.White, CircleShape)
             )
         }
     }) {
@@ -90,6 +104,19 @@ fun CameraScreen(navigation: NavController,  storage: CloudStorageManager, homeV
     }
 }
 
+/**
+ * Función que captura una imagen utilizando la cámara del dispositivo y
+ * la sube al almacenamiento en la nube.
+ *
+ * @param cameraController Controlador de la cámara del dispositivo.
+ * @param executor Executor para realizar operaciones en el hilo principal.
+ * @param navigation NavController para la navegación dentro de la aplicación.
+ * @param storage Instancia del gestor de almacenamiento en la nube para subir las imágenes capturadas.
+ * @param scope Alcance de la coroutine para realizar operaciones asíncronas.
+ * @param selectedBoulder Modelo del problema de escalada seleccionado al que se asociará la imagen.
+ * @param homeViewModel ViewModel de la pantalla de inicio para actualizar la galería de imágenes
+ * después de subir una nueva imagen.
+ */
 private fun takePicture(
     cameraController: LifecycleCameraController,
     executor: Executor,
@@ -129,6 +156,14 @@ private fun takePicture(
     )
 }
 
+/**
+ * Funcion componible que muestra la vista previa de la cámara del dispositivo.
+ *
+ * @param cameraController Controlador de la cámara del dispositivo.
+ * @param lifecycle LifecycleOwner para vincular el ciclo de vida del Composable
+ * con el ciclo de vida de la actividad o fragmento.
+ * @param modifier Modificador para personalizar la apariencia y el diseño del Composable.
+ */
 @Composable
 fun CamaraComposable(
     cameraController: LifecycleCameraController,

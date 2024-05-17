@@ -1,3 +1,14 @@
+/**
+ * BouldersScreen.kt: Este archivo contiene la implementación de la pantalla de bloques de
+ * la aplicación, que muestra una lista de bloques disponibles y proporciona opciones para
+ * agregar, actualizar y eliminar bloques.
+ *
+ * Autor: Laia Méndez Martínez
+ * Función: Define la pantalla de bloques, permitiendo al usuario visualizar, agregar, editar
+ * y eliminar bloques de escalada.
+ * Fecha de creación: 2024/02/27
+ */
+
 package com.laiamenmar.bunkervalencia.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
@@ -62,8 +73,6 @@ import com.laiamenmar.bunkervalencia.ui.theme.difficulty_5
 import com.laiamenmar.bunkervalencia.ui.theme.difficulty_6
 import com.laiamenmar.bunkervalencia.ui.theme.primaryLight
 import com.laiamenmar.bunkervalencia.ui.theme.tertiaryLight
-
-import com.laiamenmar.bunkervalencia.utils.AuthManager
 import com.laiamenmar.bunkervalencia.utils.RealtimeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -71,10 +80,17 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-@Composable()
+/**
+ * BouldersScreen: Este método compone la pantalla de Boulders, que muestra la vista principal del
+ * usuario autenticado.
+ *
+ * @param realtime     El gestor de tiempo real.
+ * @param homeViewModel  El modelo de vista principal.
+ * @param navigation    El controlador de navegación.
+ */
+@Composable
 fun BouldersScreen(
     realtime: RealtimeManager,
-    authManager: AuthManager,
     homeViewModel: HomeViewModel,
     navigation: NavController
 ) {
@@ -89,7 +105,12 @@ fun BouldersScreen(
             .padding(12.dp)
     ) {
 
-        BoulderList(homeViewModel, realtime, scope, authManager, navigation)
+        BoulderList(
+            homeViewModel = homeViewModel,
+            realtime = realtime,
+            scope = scope,
+            navigation = navigation
+        )
 
         AddBoulderDialog(
             dialogAddBoulder = dialogAddBoulder,
@@ -116,11 +137,22 @@ fun BouldersScreen(
             )*/
 
         if (currentUser != null && currentUser?.router_setter == true) {
-            FabDialog(Modifier.align(Alignment.BottomEnd), homeViewModel)
+            FabDialog(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                homeViewModel = homeViewModel
+            )
         }
     }
 }
 
+/**
+ * AddBoulderDialog: Este método compone el diálogo para agregar un bloque de escalada.
+ *
+ * @param dialogAddBoulder  Indica si el diálogo para agregar un bloque está activo.
+ * @param onDismiss         Acción a realizar cuando se cierra el diálogo.
+ * @param onAdd             Acción a realizar al agregar un nuevo bloque.
+ * @param homeViewModel     El modelo de vista principal.
+ */
 @Composable
 fun AddBoulderDialog(
     dialogAddBoulder: Boolean,
@@ -222,6 +254,16 @@ fun AddBoulderDialog(
     }
 }
 
+/**
+ * UpdateBoulderDialog: Este método compone el diálogo para actualizar un bloque existente.
+ *
+ * @param dialogUpdateBoulder Indica si el diálogo para actualizar un bloque está activo.
+ * @param onDismiss           Acción a realizar cuando se cierra el diálogo.
+ * @param onUpdate            Acción a realizar al actualizar un bloque existente.
+ * @param homeViewModel       El modelo de vista principal.
+ * @param boulderOld          El modelo del bloque de escalada existente que se actualizará.
+ */
+
 @Composable
 fun UpdateBoulderDialog(
     dialogUpdateBoulder: Boolean,
@@ -319,12 +361,21 @@ fun UpdateBoulderDialog(
     }
 }
 
+/**
+ * BoulderList: Este método compone una lista de bloques de escalada filtrada según ciertos
+ * criterios, como el muro seleccionado y los colores filtrados.
+ *
+ * @param homeViewModel El modelo de vista principal.
+ * @param realtime El administrador de tiempo real utilizado para obtener los bloques de escalada.
+ * @param scope El ámbito de la corrutina utilizado para lanzar corrutinas dentro del Composable.
+ * @param navigation El controlador de navegación utilizado para navegar
+ * entre las pantallas de la aplicación.
+ */
 @Composable
 fun BoulderList(
     homeViewModel: HomeViewModel,
     realtime: RealtimeManager,
     scope: CoroutineScope,
-    authManager: AuthManager,
     navigation: NavController
 ) {
     val bouldersListFlow by realtime.getBouldersFlow().collectAsState(emptyList())
@@ -392,7 +443,6 @@ fun BoulderList(
                             homeViewModel = homeViewModel,
                             boulder = boulder,
                             scope = scope,
-                            authManager = authManager,
                             navigation
                         )
                     }
@@ -421,13 +471,25 @@ fun BoulderList(
     }
 }
 
+/**
+ * ItemBoulder: Este método representa un elemento individual en la lista de bloques.
+ * Muestra la información del bloque y permite al usuario navegar a la página de detalle del boulder
+ * y los equipadores pueden interactuar con él.
+ *
+ * @param realtime El administrador de tiempo real utilizado para realizar operaciones en tiempo real.
+ * @param homeViewModel El modelo de vista principal utilizado para gestionar los datos relacionados
+ * con los bloques de escalada.
+ * @param boulder El objeto BoulderModel que contiene la información del bloque de escalada a mostrar.
+ * @param scope El ámbito de la corrutina utilizado para lanzar corrutinas dentro del Composable.
+ * @param navigation El controlador de navegación utilizado para navegar entre las pantallas
+ * de la aplicación.
+ */
 @Composable
 fun ItemBoulder(
     realtime: RealtimeManager,
     homeViewModel: HomeViewModel,
     boulder: BoulderModel,
     scope: CoroutineScope,
-    authManager: AuthManager,
     navigation: NavController
 
 ) {
@@ -623,6 +685,14 @@ fun ItemBoulder(
     }
 }
 
+/**
+ * FabDialog: Este método representa un cuadro de diálogo flotante (FAB) que se utiliza
+ * para agregar un nuevo bloque de escalada.
+ *
+ * @param modifier El modificador que se aplica al cuadro de diálogo flotante.
+ * @param homeViewModel El modelo de vista principal utilizado para gestionar los datos
+ * relacionados con los bloques de escalada.
+ */
 @Composable
 fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
     FloatingActionButton(onClick = {
@@ -632,6 +702,17 @@ fun FabDialog(modifier: Modifier, homeViewModel: HomeViewModel) {
     }
 }
 
+/**
+ * DeleteBoulderDialog: Este método representa un cuadro de diálogo utilizado para confirmar
+ * la eliminación de un bloque de escalada.
+ *
+ * @param dialogDeleteBoulder Indica si el cuadro de diálogo de eliminación de bloque está
+ * abierto o cerrado.
+ * @param onDismiss La acción a realizar cuando se cierra el cuadro de diálogo de eliminación
+ * de bloque.
+ * @param onBoulderConfirmDelete La acción a realizar cuando se confirma la eliminación del
+ * bloque de escalada.
+ */
 
 @Composable
 fun DeleteBoulderDialog(
@@ -662,6 +743,13 @@ fun DeleteBoulderDialog(
     }
 }
 
+/**
+ * getColorlikeColor: Este método devuelve el color correspondiente a un nivel de dificultad de
+ * bloque de escalada, para cambar el aspecto visual en función del color del bloque.
+ *
+ * @param colorString La cadena que representa el nivel de dificultad del bloque de escalada.
+ * @return El color asociado al nivel de dificultad especificado.
+ */
 fun getColorlikeColor(colorString: String): Color {
     return when (colorString) {
         "difficulty_1" -> difficulty_1
@@ -674,6 +762,13 @@ fun getColorlikeColor(colorString: String): Color {
     }
 }
 
+/**
+ * getColorForPosition: Este método devuelve el color correspondiente a un grado de escalada,
+ * para añadir el color como paramétro del boulder.
+ *
+ * @param grade El grado de escalada.
+ * @return El color asociado al grado de escalada especificado.
+ */
 fun getColorForPosition(grade: String): Color {
     return when (grade) {
         "4a", "4b", "4c" -> difficulty_1
@@ -686,6 +781,13 @@ fun getColorForPosition(grade: String): Color {
     }
 }
 
+/**
+ * getMaxGradeForColor: Este método devuelve el grado de escalada máximo correspondiente a un
+ * color de bloque de escalad, para añadir en el chip de los elementos de filtrado.
+ *
+ * @param color El color del bloque de escalada.
+ * @return El grado de escalada máximo asociado al color especificado.
+ */
 fun getMaxGradeForColor(color: String): String {
     return when (color) {
         "difficulty_1" -> "4a"
@@ -698,6 +800,14 @@ fun getMaxGradeForColor(color: String): String {
     }
 }
 
+/**
+ * truncateTimeFromDate: Esta función toma una fecha y devuelve una nueva fecha con la hora,
+ * los minutos,segundos y milisegundos establecidos en cero, es decir, una fecha sin información
+ * de tiempo para poder comparar fechas.
+ *
+ * @param date La fecha que se va a truncar.
+ * @return Una nueva fecha con la hora, los minutos, segundos y milisegundos establecidos en cero.
+ */
 fun truncateTimeFromDate(date: Date): Date {
     val calendar = Calendar.getInstance()
     calendar.time = date
